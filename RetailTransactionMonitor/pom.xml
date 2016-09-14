@@ -54,11 +54,11 @@
 					<groupId>org.apache.zookeeper</groupId>
 					<artifactId>zookeeper</artifactId>
 				</exclusion>
-				<exclusion>
+				<!-- <exclusion>
 					<groupId>log4j</groupId>
 					<artifactId>log4j</artifactId>
-				</exclusion>
-			</exclusions>
+				</exclusion> -->
+			</exclusions> 
 		</dependency>
 		<!-- <dependency> <groupId>org.apache.storm</groupId> <artifactId>storm-hbase</artifactId> 
 			<version>0.10.0</version> <exclusions> <exclusion> <groupId>org.slf4j</groupId> 
