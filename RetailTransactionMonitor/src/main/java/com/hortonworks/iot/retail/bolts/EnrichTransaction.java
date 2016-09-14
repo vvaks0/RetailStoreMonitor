@@ -197,25 +197,29 @@ public class EnrichTransaction extends BaseRichBolt {
 			hbaseAdmin.close();
 			
 			System.out.println("******************** EnrichTransaction prepare() Populating Product and Location Tables...");
-			conn.createStatement().executeUpdate(
-					"UPSERT INTO PRODUCT VALUES('11','Electronics','TV','Samsung','X101','2000.00') \n" +
-					"UPSERT INTO PRODUCT VALUES('12','Electronics','DVD-Player','LG','J202','500.00') \n" +
-					"UPSERT INTO PRODUCT VALUES('13','Electronics','Sound System','Sony','C303','1000.00') \n" +
-					"UPSERT INTO PRODUCT VALUES('21','Movie','Action','NA','Gladiator', '20.00') \n" +
-					"UPSERT INTO PRODUCT VALUES('22','Movie','Comedy','NA','Wedding Crashers','22.00') \n" +
-					"UPSERT INTO PRODUCT VALUES('23','Movie','Drama','NA','Peeky Blinders','23.00') \n" +
-					"UPSERT INTO PRODUCT VALUES('31','Game','Software','Sony','God of War X','50.00') \n" +
-					"UPSERT INTO PRODUCT VALUES('32','Game','Console','Sony','PlayStation 4','200.00') \n" +
-					"UPSERT INTO PRODUCT VALUES('33','Game','Accessory','Microsoft','XBox Controller','65.00) \n" +
-					"UPSERT INTO PRODUCT VALUES('41','Music','Hip-Hop','NA','JZ','15.00') \n" +
-					"UPSERT INTO PRODUCT VALUES('42','Music','Classic Rock','NA','Guns and Roses','19.00') \n" +
-					"UPSERT INTO PRODUCT VALUES('43','Music','Country','NA','Billy Ray Cyris','14.00') \n" +
-					"UPSERT INTO PRODUCT VALUES('51','Software','Game','Activision','X2: Wolverine's Revenge','45.00') \n" +
-					"UPSERT INTO PRODUCT VALUES('52','Software','Eduction','Knowledge Adventure','PlayZone! 4th - 6th Grade - Windows','20.00') \n" +
-					"UPSERT INTO PRODUCT VALUES('53','Software','Productivity','Microsoft','Office 360','150.00') \n");
+			String seedProducts = "UPSERT INTO \"Product\" VALUES('11','Electronics','TV','Samsung','X101','2000.00') \n" +
+					"UPSERT INTO \"Product\" VALUES('12','Electronics','DVD-Player','LG','J202','500.00') \n" +
+					"UPSERT INTO \"Product\" VALUES('13','Electronics','Sound System','Sony','C303','1000.00') \n" +
+					"UPSERT INTO \"Product\" VALUES('21','Movie','Action','NA','Gladiator', '20.00') \n" +
+					"UPSERT INTO \"Product\" VALUES('22','Movie','Comedy','NA','Wedding Crashers','22.00') \n" +
+					"UPSERT INTO \"Product\" VALUES('23','Movie','Drama','NA','Peeky Blinders','23.00') \n" +
+					"UPSERT INTO \"Product\" VALUES('31','Game','Software','Sony','God of War X','50.00') \n" +
+					"UPSERT INTO \"Product\" VALUES('32','Game','Console','Sony','PlayStation 4','200.00') \n" +
+					"UPSERT INTO \"Product\" VALUES('33','Game','Accessory','Microsoft','XBox Controller','65.00) \n" +
+					"UPSERT INTO \"Product\" VALUES('41','Music','Hip-Hop','NA','JZ','15.00') \n" +
+					"UPSERT INTO \"Product\" VALUES('42','Music','Classic Rock','NA','Guns and Roses','19.00') \n" +
+					"UPSERT INTO \"Product\" VALUES('43','Music','Country','NA','Billy Ray Cyris','14.00') \n" +
+					"UPSERT INTO \"Product\" VALUES('51','Software','Game','Activision','X2: Wolverine's Revenge','45.00') \n" +
+					"UPSERT INTO \"Product\" VALUES('52','Software','Eduction','Knowledge Adventure','PlayZone! 4th - 6th Grade - Windows','20.00') \n" +
+					"UPSERT INTO \"Product\" VALUES('53','Software','Productivity','Microsoft','Office 360','150.00') ";
+			
+			System.out.println("******************** EnrichTransaction prepare() seedProduct String: /n" + seedProducts);
+			conn.createStatement().executeUpdate(seedProducts);
 			conn.commit();
 			
-			conn.createStatement().executeUpdate("UPSERT INTO LOCATION VALUES('1000','1234 Market St.','Philadelphia','PA','19100','39.919512','-75.005711','Rays')");			
+			String seedLocations = "UPSERT INTO \"Location\" VALUES('1000','1234 Market St.','Philadelphia','PA','19100','39.919512','-75.005711','Rays')";
+			System.out.println("******************** EnrichTransaction prepare() seedProduct String: /n" + seedLocations);
+			conn.createStatement().executeUpdate(seedLocations);			
 			conn.commit();
 		} catch (IOException e) {
 			e.printStackTrace();
