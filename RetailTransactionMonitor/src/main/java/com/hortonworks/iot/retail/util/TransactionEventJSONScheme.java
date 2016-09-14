@@ -12,15 +12,15 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import com.hortonworks.iot.retail.events.IncomingTransaction;
 
+/*
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 import storm.kafka.KeyValueScheme;
+*/
 
-/*
 import org.apache.storm.kafka.KeyValueScheme;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
-*/
 
 
 
@@ -56,6 +56,12 @@ public class TransactionEventJSONScheme implements KeyValueScheme {
 		}
 
 		public List<Object> deserializeKeyAndValue(ByteBuffer arg0, ByteBuffer arg1) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public List<Object> deserialize(ByteBuffer arg0) {
 			// TODO Auto-generated method stub
 			return null;
 		}

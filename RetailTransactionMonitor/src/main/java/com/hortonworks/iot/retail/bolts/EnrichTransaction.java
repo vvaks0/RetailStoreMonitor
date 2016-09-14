@@ -12,12 +12,8 @@ import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTable;
-import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
 
@@ -27,6 +23,7 @@ import com.hortonworks.iot.retail.events.Product;
 import com.hortonworks.iot.retail.util.Constants;
 import com.hortonworks.iot.retail.util.StormProvenanceEvent;
 
+/*
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
@@ -34,8 +31,8 @@ import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
+*/
 
-/*
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -43,7 +40,7 @@ import org.apache.storm.topology.base.BaseRichBolt;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
-*/
+
 
 public class EnrichTransaction extends BaseRichBolt {
 	private static final long serialVersionUID = 1L;
@@ -198,8 +195,8 @@ public class EnrichTransaction extends BaseRichBolt {
 			
 			System.out.println("******************** EnrichTransaction prepare() Populating Product and Location Tables...");
 			
-			String seedProducts = "UPSERT INTO \"Product\" VALUES('11','Electronics','TV','Samsung','X101',2000.00) \n" +
-					"UPSERT INTO \"Product\" VALUES('12','Electronics','DVD-Player','LG','J202',500.00) \n" +
+			String seedProducts = "UPSERT INTO \"Product\" VALUES('11','Electronics','TV','Samsung','X101',2000.00) \n";
+					/* "UPSERT INTO \"Product\" VALUES('12','Electronics','DVD-Player','LG','J202',500.00) \n" +
 					"UPSERT INTO \"Product\" VALUES('13','Electronics','Sound System','Sony','C303',1000.00) \n" +
 					"UPSERT INTO \"Product\" VALUES('21','Movie','Action','NA','Gladiator',20.00) \n" +
 					"UPSERT INTO \"Product\" VALUES('22','Movie','Comedy','NA','Wedding Crashers',22.00) \n" +
@@ -212,7 +209,7 @@ public class EnrichTransaction extends BaseRichBolt {
 					"UPSERT INTO \"Product\" VALUES('43','Music','Country','NA','Billy Ray Cyris',14.00) \n" +
 					"UPSERT INTO \"Product\" VALUES('51','Software','Game','Activision','X2: Wolverine's Revenge',45.00) \n" +
 					"UPSERT INTO \"Product\" VALUES('52','Software','Eduction','Knowledge Adventure','PlayZone! 4th - 6th Grade - Windows',20.00) \n" +
-					"UPSERT INTO \"Product\" VALUES('53','Software','Productivity','Microsoft','Office 360',150.00) ";
+					"UPSERT INTO \"Product\" VALUES('53','Software','Productivity','Microsoft','Office 360',150.00) "; */
 			
 			
 			System.out.println("******************** EnrichTransaction prepare() seedProduct String: \n" + seedProducts);
