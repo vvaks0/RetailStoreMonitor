@@ -81,7 +81,7 @@ public class AtlasLineageReporter extends BaseRichBolt {
 	private Map<String,SpoutSpec> spouts; 
 	private Map topologyConf;
 	private Referenceable topology;
-	private Constants constants = new Constants(); ;
+	private Constants constants;
 	
 	public static final String ANONYMOUS_OWNER = "anonymous";
 	public static final String HBASE_NAMESPACE_DEFAULT = "default";
