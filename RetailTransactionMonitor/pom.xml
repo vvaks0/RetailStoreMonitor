@@ -12,6 +12,11 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+    		<groupId>log4j</groupId>
+    		<artifactId>log4j</artifactId>
+    		<version>1.2.17</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.zookeeper</groupId>
 			<artifactId>zookeeper</artifactId>
 			<version>3.4.6</version>
@@ -35,29 +40,29 @@
 			<artifactId>storm-kafka</artifactId>
 			<version>1.0.1</version>
 			<exclusions>
-			<!-- <exclusion>
+			<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-log4j12</artifactId>
 				</exclusion>
 			    <exclusion>
 					<groupId>log4j</groupId>
 					<artifactId>log4j</artifactId>
-				</exclusion -->
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka_2.10</artifactId>
-			<version>0.10.0.0</version>
+			<version>0.10.0.1</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.zookeeper</groupId>
 					<artifactId>zookeeper</artifactId>
 				</exclusion>
-				<!-- <exclusion>
+				<exclusion>
 					<groupId>log4j</groupId>
 					<artifactId>log4j</artifactId>
-				</exclusion> -->
+				</exclusion>
 			</exclusions> 
 		</dependency>
 		<!-- <dependency> <groupId>org.apache.storm</groupId> <artifactId>storm-hbase</artifactId> 
@@ -70,14 +75,14 @@
 			<version>1.1.2</version>
 			<scope>compile</scope>
 			<exclusions>
-				<!-- <exclusion>
+				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-log4j12</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>log4j</groupId>
 					<artifactId>log4j</artifactId>
-				</exclusion> -->
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -86,14 +91,14 @@
 			<version>1.1.2</version>
 			<scope>compile</scope>
 			<exclusions>
-				<!-- <exclusion>
+				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-log4j12</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>log4j</groupId>
 					<artifactId>log4j</artifactId>
-				</exclusion>  -->
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<!-- <dependency>
@@ -142,14 +147,14 @@
 			<version>0.7-incubating</version>
 			<scope>compile</scope>
 			<exclusions>
-				<!-- <exclusion>
+				<exclusion>
 					<groupId>log4j</groupId>
 					<artifactId>log4j</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-log4j12</artifactId>
-				</exclusion> -->
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -158,14 +163,14 @@
 			<version>0.7-incubating</version>
 			<scope>compile</scope>
 			<exclusions>
-				<!-- <exclusion>
+				<exclusion>
 					<groupId>log4j</groupId>
 					<artifactId>log4j</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-log4j12</artifactId>
-				</exclusion> -->
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -174,14 +179,14 @@
 			<version>0.7-incubating</version>
 			<scope>compile</scope>
 			<exclusions>
-				<!-- <exclusion>
+				<exclusion>
 					<groupId>log4j</groupId>
 					<artifactId>log4j</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-log4j12</artifactId>
-				</exclusion>  -->
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
