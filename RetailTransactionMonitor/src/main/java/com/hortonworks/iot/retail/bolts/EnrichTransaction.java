@@ -214,7 +214,7 @@ public class EnrichTransaction extends BaseRichBolt {
 					seedProducts.add("UPSERT INTO \"Product\" VALUES('41','Music','Hip-Hop','NA','JZ',15.00)");
 					seedProducts.add("UPSERT INTO \"Product\" VALUES('42','Music','Classic Rock','NA','Guns and Roses',19.00)");
 					seedProducts.add("UPSERT INTO \"Product\" VALUES('43','Music','Country','NA','Billy Ray Cyris',14.00)");
-					seedProducts.add("UPSERT INTO \"Product\" VALUES('51','Software','Game','Activision','X2: Wolverine's Revenge',45.00)");
+					seedProducts.add("UPSERT INTO \"Product\" VALUES('51','Software','Game','Activision','X2: Wolverine\'s Revenge',45.00)");
 					seedProducts.add("UPSERT INTO \"Product\" VALUES('52','Software','Eduction','Knowledge Adventure','PlayZone! 4th - 6th Grade - Windows',20.00)");
 					seedProducts.add("UPSERT INTO \"Product\" VALUES('53','Software','Productivity','Microsoft','Office 360',150.00)");
 			
