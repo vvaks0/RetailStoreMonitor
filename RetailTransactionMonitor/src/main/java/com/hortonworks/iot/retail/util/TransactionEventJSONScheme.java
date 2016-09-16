@@ -33,7 +33,7 @@ public class TransactionEventJSONScheme implements KeyValueScheme {
 			String eventJSONString = new String(value, UTF8);
 	        IncomingTransaction incomingTransaction = null;
 	        ObjectMapper mapper = new ObjectMapper();
-	        
+	        System.out.println("******************** Recieved Incoming Event... key: " + eventKey + "/n value: " + eventJSONString);
 	        try {
 				incomingTransaction = mapper.readValue(eventJSONString, IncomingTransaction.class);
 			} catch (JsonParseException e) {
