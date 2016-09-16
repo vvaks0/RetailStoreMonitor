@@ -9,7 +9,7 @@ public class Constants {
 	private String zkHBasePath = "/hbase-unsecure";
 	private String zkConnString;
 	private String incomingTransactionsTopicName = "IncomingTransactions";
-	private String customerTransactionValidationTopicName = "CustomerTransactionValidation";
+	private String socialMediaTopicName = "SocialMedia";
 	
 	private String cometdHost = "sandbox.hortonworks.com";
 	private String cometdPort = "8091";
@@ -148,14 +148,6 @@ public class Constants {
 		this.incomingTransactionsTopicName = incomingTransactionsTopicName;
 	}
 
-	public String getCustomerTransactionValidationTopicName() {
-		return customerTransactionValidationTopicName;
-	}
-
-	public void setCustomerTransactionValidationTopicName(String customerTransactionValidationTopicName) {
-		this.customerTransactionValidationTopicName = customerTransactionValidationTopicName;
-	}
-
 	public String getNameNode() {
 		return nameNode;
 	}
@@ -186,5 +178,13 @@ public class Constants {
 
 	public void setAtlasPort(String atlasPort) {
 		this.atlasPort = atlasPort;
+	}
+
+	public String getSocialMediaTopicName() {
+		return socialMediaTopicName;
+	}
+
+	public void setSocialMediaTopicName(String socialMediaTopicName) {
+		this.socialMediaTopicName = socialMediaTopicName;
 	}
 }

@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -77,14 +78,16 @@ public class EnrichTransaction extends BaseRichBolt {
 		System.out.println("********************** Enriching event: " + transactionKey);	    
 	    Result result = null;
 	    ResultSet resultSet = null;
+	    Boolean matchedProduct = false;
+	    Boolean matchedLocation = false;
 		try {
-			//result = productTable.get(get);
 			List<Product> products = new ArrayList<Product>();
 			resultSet = conn.createStatement().executeQuery("SELECT * FROM Product WHERE productId IN ('" + String.join("','", incomingTransaction.getItems()) + "')");
 			while (resultSet.next()) {
 		    	System.out.println(resultSet.getString(1) + " " + resultSet.getString(2) + " " + resultSet.getString(3) + " " + resultSet.getString(4)+ " " + resultSet.getString(5) + " " + resultSet.getString(6));
 		    	products.add(new Product(resultSet.getString(1),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4),resultSet.getString(5), resultSet.getDouble(6)));
-		    }
+		    	matchedProduct = true;
+			}
 			
 		    resultSet = conn.createStatement().executeQuery("SELECT * FROM Location WHERE locationId = '" + incomingTransaction.toString() + "'");
 		    while (resultSet.next()) {
@@ -97,6 +100,7 @@ public class EnrichTransaction extends BaseRichBolt {
 		    	enrichedTransaction.setLatitude(resultSet.getString(6));
 		    	enrichedTransaction.setLongitude(resultSet.getString(7));
 		    	enrichedTransaction.setBrand(resultSet.getString(8));
+		    	matchedLocation = true;
 		    }
 		    
 		    enrichedTransaction.setProducts(products);
@@ -104,13 +108,12 @@ public class EnrichTransaction extends BaseRichBolt {
 			e.printStackTrace();
 		}
 		
-		if(result.getValue(Bytes.toBytes("AccountDetails"),Bytes.toBytes("accountNumber")) !=null){
-			
+		if(matchedLocation && matchedProduct){
 			collector.emit(tuple, new Values((EnrichedTransaction)enrichedTransaction, stormProvenance));
 			collector.ack(tuple);
 		}
 		else{
-			System.out.println("The transaction refers to an account that is not in the data store.");
+			System.out.println("The transaction refers to a Product and/or Locaiton that are not in the data store.");
 			System.out.println("Account: " + incomingTransaction.getAccountNumber());
 			collector.ack(tuple);
 		}
@@ -195,31 +198,43 @@ public class EnrichTransaction extends BaseRichBolt {
 			
 			System.out.println("******************** EnrichTransaction prepare() Populating Product and Location Tables...");
 			
-			String seedProducts = "UPSERT INTO \"Product\" VALUES('11','Electronics','TV','Samsung','X101',2000.00) \n";
-					/* "UPSERT INTO \"Product\" VALUES('12','Electronics','DVD-Player','LG','J202',500.00) \n" +
-					"UPSERT INTO \"Product\" VALUES('13','Electronics','Sound System','Sony','C303',1000.00) \n" +
-					"UPSERT INTO \"Product\" VALUES('21','Movie','Action','NA','Gladiator',20.00) \n" +
-					"UPSERT INTO \"Product\" VALUES('22','Movie','Comedy','NA','Wedding Crashers',22.00) \n" +
-					"UPSERT INTO \"Product\" VALUES('23','Movie','Drama','NA','Peeky Blinders',23.00) \n" +
-					"UPSERT INTO \"Product\" VALUES('31','Game','Software','Sony','God of War X',50.00) \n" +
-					"UPSERT INTO \"Product\" VALUES('32','Game','Console','Sony','PlayStation 4',200.00) \n" +
-					"UPSERT INTO \"Product\" VALUES('33','Game','Accessory','Microsoft','XBox Controller',65.00) \n" +
-					"UPSERT INTO \"Product\" VALUES('41','Music','Hip-Hop','NA','JZ',15.00) \n" +
-					"UPSERT INTO \"Product\" VALUES('42','Music','Classic Rock','NA','Guns and Roses',19.00) \n" +
-					"UPSERT INTO \"Product\" VALUES('43','Music','Country','NA','Billy Ray Cyris',14.00) \n" +
-					"UPSERT INTO \"Product\" VALUES('51','Software','Game','Activision','X2: Wolverine's Revenge',45.00) \n" +
-					"UPSERT INTO \"Product\" VALUES('52','Software','Eduction','Knowledge Adventure','PlayZone! 4th - 6th Grade - Windows',20.00) \n" +
-					"UPSERT INTO \"Product\" VALUES('53','Software','Productivity','Microsoft','Office 360',150.00) "; */
+			List<String> seedProducts = new ArrayList<String>(); 
+					seedProducts.add("UPSERT INTO \"Product\" VALUES('11','Electronics','TV','Samsung','X101',2000.00)");
+					seedProducts.add("UPSERT INTO \"Product\" VALUES('12','Electronics','DVD-Player','LG','J202',500.00)");
+					seedProducts.add("UPSERT INTO \"Product\" VALUES('13','Electronics','Sound System','Sony','C303',1000.00)");
+					seedProducts.add("UPSERT INTO \"Product\" VALUES('21','Movie','Action','NA','Gladiator',20.00)");
+					seedProducts.add("UPSERT INTO \"Product\" VALUES('22','Movie','Comedy','NA','Wedding Crashers',22.00)");
+					seedProducts.add("UPSERT INTO \"Product\" VALUES('23','Movie','Drama','NA','Peeky Blinders',23.00)");
+					seedProducts.add("UPSERT INTO \"Product\" VALUES('31','Game','Software','Sony','God of War X',50.00)");
+					seedProducts.add("UPSERT INTO \"Product\" VALUES('32','Game','Console','Sony','PlayStation 4',200.00)");
+					seedProducts.add("UPSERT INTO \"Product\" VALUES('33','Game','Accessory','Microsoft','XBox Controller',65.00)");
+					seedProducts.add("UPSERT INTO \"Product\" VALUES('41','Music','Hip-Hop','NA','JZ',15.00)");
+					seedProducts.add("UPSERT INTO \"Product\" VALUES('42','Music','Classic Rock','NA','Guns and Roses',19.00)");
+					seedProducts.add("UPSERT INTO \"Product\" VALUES('43','Music','Country','NA','Billy Ray Cyris',14.00)");
+					seedProducts.add("UPSERT INTO \"Product\" VALUES('51','Software','Game','Activision','X2: Wolverine's Revenge',45.00)");
+					seedProducts.add("UPSERT INTO \"Product\" VALUES('52','Software','Eduction','Knowledge Adventure','PlayZone! 4th - 6th Grade - Windows',20.00)");
+					seedProducts.add("UPSERT INTO \"Product\" VALUES('53','Software','Productivity','Microsoft','Office 360',150.00)");
 			
+			String currentProduct;
+			Iterator<String> productsIterator = seedProducts.iterator();
+			while(productsIterator.hasNext()){
+				currentProduct = productsIterator.next();
+				System.out.println("******************** EnrichTransaction prepare() Upsert Product String: \n" + currentProduct);
+				conn.createStatement().executeUpdate(currentProduct);
+				conn.commit();
+			}
 			
-			System.out.println("******************** EnrichTransaction prepare() seedProduct String: \n" + seedProducts);
-			conn.createStatement().executeUpdate(seedProducts);
-			conn.commit();
+			List<String> seedLocations = new ArrayList<String>(); 
+			seedLocations.add("UPSERT INTO \"Location\" VALUES('1000','1234 Market St.','Philadelphia','PA','19100','39.919512','-75.005711','Rays')");
 			
-			String seedLocations = "UPSERT INTO \"Location\" VALUES('1000','1234 Market St.','Philadelphia','PA','19100','39.919512','-75.005711','Rays')";
-			System.out.println("******************** EnrichTransaction prepare() seedProduct String: \n" + seedLocations);
-			conn.createStatement().executeUpdate(seedLocations);			
-			conn.commit();
+			String currentLocation;
+			Iterator<String> locationsIterator = seedLocations.iterator();
+			while(locationsIterator.hasNext()){
+				currentLocation = locationsIterator.next();
+				System.out.println("******************** EnrichTransaction prepare() Upsert Location String: \n" + currentLocation);
+				conn.createStatement().executeUpdate(currentLocation);			
+				conn.commit();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {

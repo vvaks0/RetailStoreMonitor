@@ -79,6 +79,8 @@ public class RetailTransactionMonitorTopology {
         System.out.println("********************** Zookeeper ConnString: " + constants.getZkConnString());
         System.out.println("********************** Zookeeper Kafka Path: " + constants.getZkKafkaPath());
         System.out.println("********************** Zookeeper HBase Path: " + constants.getZkHBasePath());
+        System.out.println("********************** Atlas Host: " + constants.getAtlasHost());
+        System.out.println("********************** Atlas Port: " + constants.getAtlasPort());
         System.out.println("********************** Cometd URI: " + constants.getPubSubUrl());
 	  	  
 	      Config conf = new Config(); 
@@ -94,7 +96,7 @@ public class RetailTransactionMonitorTopology {
 	      KafkaSpout incomingTransactionsKafkaSpout = new KafkaSpout(incomingTransactionsKafkaSpoutConfig); 
 	      
 	      //SpoutConfig customerTransactionValidationKafkaSpoutConfig = new SpoutConfig(hosts, Constants.customerTransactionValidationTopicName, "/" + Constants.customerTransactionValidationTopicName, UUID.randomUUID().toString());
-	      SpoutConfig socialMediaKafkaSpoutConfig = new SpoutConfig(hosts, constants.getCustomerTransactionValidationTopicName(), constants.getZkKafkaPath(), UUID.randomUUID().toString());
+	      SpoutConfig socialMediaKafkaSpoutConfig = new SpoutConfig(hosts, constants.getSocialMediaTopicName(), constants.getZkKafkaPath(), UUID.randomUUID().toString());
 	      socialMediaKafkaSpoutConfig.scheme = new SchemeAsMultiScheme(new TransactionEventJSONScheme());
 	      socialMediaKafkaSpoutConfig.ignoreZkOffsets = true;
 	      socialMediaKafkaSpoutConfig.useStartOffsetTimeIfOffsetOutOfRange = true;
