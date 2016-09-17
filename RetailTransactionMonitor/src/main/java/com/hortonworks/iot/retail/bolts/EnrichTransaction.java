@@ -84,22 +84,34 @@ public class EnrichTransaction extends BaseRichBolt {
 			List<Product> products = new ArrayList<Product>();
 			resultSet = conn.createStatement().executeQuery("SELECT * FROM Product WHERE productId IN ('" + String.join("','", incomingTransaction.getItems()) + "')");
 			while (resultSet.next()) {
-		    	System.out.println(resultSet.getString(1) + " " + resultSet.getString(2) + " " + resultSet.getString(3) + " " + resultSet.getString(4)+ " " + resultSet.getString(5) + " " + resultSet.getString(6));
-		    	products.add(new Product(resultSet.getString(1),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4),resultSet.getString(5), resultSet.getDouble(6)));
+		    	System.out.println("******************** " + 
+    					resultSet.getString("productId") + "," +
+    					resultSet.getString("productCategory") + "," +
+    					resultSet.getString("productSubCategory") + "," +
+    					resultSet.getString("manufacturer") + "," +
+    					resultSet.getString("productName") + "," + 
+    					resultSet.getDouble("price"));
+		    	products.add(new Product(
+		    			resultSet.getString("productId"),
+		    			resultSet.getString("productCategory"),
+		    			resultSet.getString("productSubCategory"),
+		    			resultSet.getString("manufacturer"),
+		    			resultSet.getString("productName"), 
+		    			resultSet.getDouble("price")));
 		    	matchedProduct = true;
 			}
 			
-		    resultSet = conn.createStatement().executeQuery("SELECT * FROM Location WHERE locationId = '" + incomingTransaction.toString() + "'");
+		    resultSet = conn.createStatement().executeQuery("SELECT * FROM Location WHERE locationId = '" + incomingTransaction.getLocationId() + "'");
 		    while (resultSet.next()) {
 		    	System.out.println(resultSet.getString(1) + " " + resultSet.getString(2));
-		    	enrichedTransaction.setLocationId(resultSet.getString(1));
-		    	enrichedTransaction.setStreetAddress(resultSet.getString(2));
-		    	enrichedTransaction.setCity(resultSet.getString(3));
-		    	enrichedTransaction.setState(resultSet.getString(4));
-		    	enrichedTransaction.setZipCode(resultSet.getString(5));
-		    	enrichedTransaction.setLatitude(resultSet.getString(6));
-		    	enrichedTransaction.setLongitude(resultSet.getString(7));
-		    	enrichedTransaction.setBrand(resultSet.getString(8));
+		    	enrichedTransaction.setLocationId(resultSet.getString("locationId"));
+		    	enrichedTransaction.setStreetAddress(resultSet.getString("address"));
+		    	enrichedTransaction.setCity(resultSet.getString("city"));
+		    	enrichedTransaction.setState(resultSet.getString("state"));
+		    	enrichedTransaction.setZipCode(resultSet.getString("zip"));
+		    	enrichedTransaction.setLatitude(resultSet.getString("latitude"));
+		    	enrichedTransaction.setLongitude(resultSet.getString("longitude"));
+		    	enrichedTransaction.setBrand(resultSet.getString("brand"));
 		    	matchedLocation = true;
 		    }
 		    

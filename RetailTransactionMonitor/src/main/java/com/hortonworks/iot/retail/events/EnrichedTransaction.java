@@ -6,7 +6,6 @@ import java.util.List;
 public class EnrichedTransaction extends IncomingTransaction implements Serializable{
 	private static final long serialVersionUID = 1L;
 
-	private String locationId;
 	private List<Product> products;
 	private String streetAddress;
 	private String city;
@@ -16,12 +15,6 @@ public class EnrichedTransaction extends IncomingTransaction implements Serializ
 	private String longitude;
 	private String brand;
 	
-	public String getLocationId() {
-		return locationId;
-	}
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
 	public String getStreetAddress() {
 		return streetAddress;
 	}

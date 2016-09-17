@@ -2,8 +2,11 @@ package com.hortonworks.iot.retail.events;
 
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 public class IncomingTransaction {
 	private String transactionId;
+	private String locationId;
 	private String [] items;
 	private String accountNumber;
 	private String accountType;
@@ -66,5 +69,12 @@ public class IncomingTransaction {
 	}
 	public void setItems(String[] items) {
 		this.items = items;
+	}
+	public String getLocationId() {
+		return locationId;
+	}
+	@JsonProperty("serialNumber")
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
 	}
 }
