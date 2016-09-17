@@ -28,9 +28,9 @@ public class TransactionEventJSONScheme implements KeyValueScheme {
 		private static final long serialVersionUID = 1L;
 		private static final Charset UTF8 = Charset.forName("UTF-8");
 
-		public List<Object> deserializeKeyAndValue(byte[] key, byte[] value) {
-			String eventKey = new String(key, UTF8);
-			String eventJSONString = new String(value, UTF8);
+		public List<Object> deserializeKeyAndValue(ByteBuffer key, ByteBuffer value) {
+			String eventKey = new String(key.array(), UTF8);
+			String eventJSONString = new String(value.array(), UTF8);
 	        IncomingTransaction incomingTransaction = null;
 	        ObjectMapper mapper = new ObjectMapper();
 	        System.out.println("******************** Recieved Incoming Event... key: " + eventKey + "/n value: " + eventJSONString);
@@ -49,16 +49,6 @@ public class TransactionEventJSONScheme implements KeyValueScheme {
 	    public Fields getOutputFields() {
 	        return new Fields("TransactionKey", "IncomingTransaction");
 	    }
-
-	    
-		public List<Object> deserialize(byte[] arg0) {
-			return null;
-		}
-
-		public List<Object> deserializeKeyAndValue(ByteBuffer arg0, ByteBuffer arg1) {
-			// TODO Auto-generated method stub
-			return null;
-		}
 
 		@Override
 		public List<Object> deserialize(ByteBuffer arg0) {
