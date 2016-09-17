@@ -19,21 +19,20 @@ import storm.kafka.KeyValueScheme;
 */
 
 import org.apache.storm.kafka.KeyValueScheme;
+import org.apache.storm.kafka.StringScheme;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
-
-
 
 public class TransactionEventJSONScheme implements KeyValueScheme {
 		private static final long serialVersionUID = 1L;
 		private static final Charset UTF8 = Charset.forName("UTF-8");
 
 		public List<Object> deserializeKeyAndValue(ByteBuffer key, ByteBuffer value) {
-			String eventKey = new String(key.array(), UTF8);
-			String eventJSONString = new String(value.array(), UTF8);
+			String eventKey = StringScheme.deserializeString(key);
+			String eventJSONString = StringScheme.deserializeString(value);
 	        IncomingTransaction incomingTransaction = null;
 	        ObjectMapper mapper = new ObjectMapper();
-	        System.out.println("******************** Recieved Incoming Event... key: " + eventKey + "/n value: " + eventJSONString);
+	        System.out.println("******************** Recieved Incoming Event... \n key: " + eventKey + "\n value: " + eventJSONString);
 	        try {
 				incomingTransaction = mapper.readValue(eventJSONString, IncomingTransaction.class);
 			} catch (JsonParseException e) {
