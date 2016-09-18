@@ -265,6 +265,7 @@ public class AtlasLineageReporter extends BaseRichBolt {
     	Referenceable topologyReferenceable = new Referenceable("storm_topology_reference");
     	topologyReferenceable.set("id", topologyName);
     	topologyReferenceable.set("name", topologyName);
+    	topologyReferenceable.set("qualifiedName", "referenceTopology."+topologyName);
     	//topologyReferenceable.set(AtlasClient.REFERENCEABLE_ATTRIBUTE_NAME, topologyInfo.get_name());
     	String owner = "";//topologyInfo.get_owner();
     	if (StringUtils.isEmpty(owner)) {
