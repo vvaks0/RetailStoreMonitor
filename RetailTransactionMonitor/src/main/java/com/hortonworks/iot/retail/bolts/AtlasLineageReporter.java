@@ -261,7 +261,7 @@ public class AtlasLineageReporter extends BaseRichBolt {
         LineageReferenceType[] outputs = {new LineageReferenceType(outputEvent.getId()._getId().replace("[", "").replace("]", "").replace("\"", "").replace("\\", ""), jsonClass, version, typeName)};
         //typeName = "storm_node";
         //LineageReferenceType[] nodes = {new LineageReferenceType(getBoltReference().getId()._getId().replace("[", "").replace("]", "").replace("\"", "").replace("\\", ""), jsonClass, version, typeName)};
-    	String topologyName = "CreditCardTransactionMonitor" + inputs[0].getId();
+    	String topologyName = "RetailTransactionMonitor" + inputs[0].getId();
     	Referenceable topologyReferenceable = new Referenceable("storm_topology_reference");
     	topologyReferenceable.set("id", topologyName);
     	topologyReferenceable.set("name", topologyName);
