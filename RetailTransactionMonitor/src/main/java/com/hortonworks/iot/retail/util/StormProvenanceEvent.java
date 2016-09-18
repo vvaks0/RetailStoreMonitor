@@ -5,6 +5,7 @@ public class StormProvenanceEvent {
 	private String eventType;	
 	private String componentName;
 	private String componentType;
+	private String componentQName;
 	private String sourceDataRepositoryType;
 	private String sourceDataRepositoryLocation;
 	private String targetDataRepositoryType;
@@ -15,6 +16,7 @@ public class StormProvenanceEvent {
 	public StormProvenanceEvent(String eventKey, String eventType, String componentName, String componentType){
 		this.eventKey = eventKey;
 		this.eventType = eventType;
+		this.setComponentQName(componentName + "." + componentType);
 		this.componentName = componentName;
 		this.componentType = componentType;
 	}
@@ -74,6 +76,14 @@ public class StormProvenanceEvent {
 
 	public void setSourceDataRepositoryLocation(String sourceDataRepositoryLocation) {
 		this.sourceDataRepositoryLocation = sourceDataRepositoryLocation;
+	}
+
+	public String getComponentQName() {
+		return componentQName;
+	}
+
+	public void setComponentQName(String componentQName) {
+		this.componentQName = componentQName;
 	}
 	
 	

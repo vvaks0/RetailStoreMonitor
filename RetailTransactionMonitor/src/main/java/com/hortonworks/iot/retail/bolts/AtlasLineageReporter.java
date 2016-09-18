@@ -116,6 +116,7 @@ public class AtlasLineageReporter extends BaseRichBolt {
 			currentEvent = iterator.next();
 			transactionKey = currentEvent.getEventKey();
 			System.out.println("********************* Printing Lineage for Event: " + transactionKey);
+			System.out.println("********************* Component Qualified Name: " + currentEvent.getComponentQName());
 			System.out.println("********************* Component Name: " + currentEvent.getComponentName());
 			System.out.println("********************* Component Type: " + currentEvent.getComponentType());  
 			if(currentEvent.getComponentType().equalsIgnoreCase("SPOUT")){
@@ -484,6 +485,7 @@ public class AtlasLineageReporter extends BaseRichBolt {
         // TODO populate processor properties and determine real parent group, assuming root group for now
         final Referenceable processor = new Referenceable("event");
         processor.set("name", flowFileUuid);
+        processor.set("qualifiedName", "event." + flowFileUuid);
         processor.set("event_key", "accountNumber");
         processor.set("description", flowFileUuid);
         return processor;
