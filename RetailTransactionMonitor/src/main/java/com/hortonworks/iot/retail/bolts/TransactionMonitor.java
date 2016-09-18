@@ -70,8 +70,8 @@ public class TransactionMonitor extends BaseRichBolt {
 					transaction.getTransactionId() + "','" + 
 					transaction.getLocationId() + "','" + 
 					transaction.getAccountNumber() + "','" + 
-					transaction.getAccountType() + "','" + 
-					transaction.getAmount() + "','" + 
+					transaction.getAccountType() + "'," + 
+					transaction.getAmount() + ",'" + 
 					transaction.getCurrency() + "','" + 
 					transaction.getIsCardPresent() + "','" + 
 					transaction.getTransactionTimeStamp() + "')");
