@@ -73,7 +73,7 @@ public class TransactionMonitor extends BaseRichBolt {
 					transaction.getAccountType() + "','" + 
 					transaction.getAmount() + "','" + 
 					transaction.getCurrency() + "','" + 
-					transaction.getIsCardPresent() + "'" + 
+					transaction.getIsCardPresent() + "','" + 
 					transaction.getTransactionTimeStamp() + "')");
 			
 			List<Product> products = transaction.getProducts();
