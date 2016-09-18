@@ -495,6 +495,7 @@ public class AtlasLineageReporter extends BaseRichBolt {
     private Referenceable createEvent(StormProvenanceEvent event, final String uuid) {
         final Referenceable processor = new Referenceable("event");
         processor.set("name", uuid);
+        processor.set("qualifiedName", "event." + uuid);
         processor.set("event_key", "accountNumber");
         processor.set("description", uuid);
         return processor;
