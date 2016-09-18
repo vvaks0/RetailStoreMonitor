@@ -2,8 +2,10 @@ package com.hortonworks.iot.retail.events;
 
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 
+@JsonIgnoreProperties(value = { "state","status" })
 public class IncomingTransaction {
 	private String transactionId;
 	private String locationId;
