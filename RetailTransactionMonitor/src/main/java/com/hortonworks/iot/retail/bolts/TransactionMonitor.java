@@ -75,6 +75,7 @@ public class TransactionMonitor extends BaseRichBolt {
 					transaction.getCurrency() + "','" + 
 					transaction.getIsCardPresent() + "'," + 
 					transaction.getTransactionTimeStamp() + ")");
+			conn.commit();
 			
 			List<Product> products = transaction.getProducts();
 			Iterator<Product> iterator = products.iterator();
@@ -88,6 +89,7 @@ public class TransactionMonitor extends BaseRichBolt {
 					currentProduct.getProductId() + "') \n";
 			}
 			conn.createStatement().executeUpdate(transactionItemsUpsert);
+			conn.commit();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
