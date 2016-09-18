@@ -82,7 +82,7 @@ public class EnrichTransaction extends BaseRichBolt {
 	    Boolean matchedLocation = false;
 		try {
 			List<Product> products = new ArrayList<Product>();
-			resultSet = conn.createStatement().executeQuery("SELECT * FROM \"Product\" WHERE productId IN ('" + String.join("','", incomingTransaction.getItems()) + "')");
+			resultSet = conn.createStatement().executeQuery("SELECT * FROM \"Product\" WHERE \"productId\" IN ('" + String.join("','", incomingTransaction.getItems()) + "')");
 			while (resultSet.next()) {
 		    	System.out.println("******************** " + 
     					resultSet.getString("productId") + "," +
@@ -101,7 +101,7 @@ public class EnrichTransaction extends BaseRichBolt {
 		    	matchedProduct = true;
 			}
 			
-		    resultSet = conn.createStatement().executeQuery("SELECT * FROM \"Location\" WHERE locationId = '" + incomingTransaction.getLocationId() + "'");
+		    resultSet = conn.createStatement().executeQuery("SELECT * FROM \"Location\" WHERE \"locationId\" = '" + incomingTransaction.getLocationId() + "'");
 		    while (resultSet.next()) {
 		    	System.out.println(resultSet.getString(1) + " " + resultSet.getString(2));
 		    	enrichedTransaction.setLocationId(resultSet.getString("locationId"));
