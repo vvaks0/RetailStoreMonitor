@@ -55,7 +55,7 @@ public class TransactionMonitor extends BaseRichBolt {
 		String transactionKey = stormProvenance.get(0).getEventKey();
 	    StormProvenanceEvent provenanceEvent = new StormProvenanceEvent(transactionKey, actionType, componentId, componentType);
 	    provenanceEvent.setTargetDataRepositoryType("HBASE");
-	    provenanceEvent.setTargetDataRepositoryLocation(constants.getZkConnString() + ":" + constants.getZkHBasePath() + ":" + transactionHistoryTable.getName().getNameAsString());
+	    provenanceEvent.setTargetDataRepositoryLocation(constants.getZkConnString() + ":" + constants.getZkHBasePath() + ":" + constants.getZkHBasePath());
 	    stormProvenance.add(provenanceEvent);
 	    
 	    persistTransactionToHbase(transaction);
@@ -66,7 +66,7 @@ public class TransactionMonitor extends BaseRichBolt {
 	
 	public void persistTransactionToHbase(EnrichedTransaction transaction){
 		try {
-			conn.createStatement().executeUpdate("UPSERT INTO TransactionHistory VALUES('" + 
+			conn.createStatement().executeUpdate("UPSERT INTO \"TransactionHistory\" VALUES('" + 
 					transaction.getTransactionId() + "','" + 
 					transaction.getLocationId() + "','" + 
 					transaction.getAccountNumber() + "','" + 
@@ -82,7 +82,7 @@ public class TransactionMonitor extends BaseRichBolt {
 			String transactionItemsUpsert = "";
 			while(iterator.hasNext()){
 				currentProduct = iterator.next();
-				transactionItemsUpsert = transactionItemsUpsert + " UPSERT INTO TransactionItems VALUES('" +
+				transactionItemsUpsert = transactionItemsUpsert + " UPSERT INTO \"TransactionItems\" VALUES('" +
 					transaction.getTransactionId() + currentProduct.getProductId() + "','" +
 					transaction.getTransactionId() + "','" +
 					currentProduct.getProductId() + "') \n";
