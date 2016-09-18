@@ -9,7 +9,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 public class IncomingTransaction {
 	private String transactionId;
 	private String locationId;
-	private String [] items;
+	private List<String> items;
 	private String accountNumber;
 	private String accountType;
 	private Double amount;
@@ -66,17 +66,17 @@ public class IncomingTransaction {
 	public void setIpAddress(String ipAddress) {
 		this.ipAddress = ipAddress;
 	}
-	public String[] getItems() {
-		return items;
-	}
-	public void setItems(String[] items) {
-		this.items = items;
-	}
 	public String getLocationId() {
 		return locationId;
 	}
 	@JsonProperty("serialNumber")
 	public void setLocationId(String locationId) {
 		this.locationId = locationId;
+	}
+	public List<String> getItems() {
+		return items;
+	}
+	public void setItems(List<String> items) {
+		this.items = items;
 	}
 }
