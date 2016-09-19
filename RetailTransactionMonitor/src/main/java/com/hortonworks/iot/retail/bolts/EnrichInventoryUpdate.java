@@ -59,17 +59,17 @@ public class EnrichInventoryUpdate extends BaseRichBolt {
 		InventoryUpdate inventoryUpdate = (InventoryUpdate) tuple.getValueByField("InventoryUpdate");
 		EnrichedInventoryUpdate enrichedInventoryUpdate = new EnrichedInventoryUpdate();
 		
-		String actionType = "MODIFY";
-		List<StormProvenanceEvent> stormProvenance = (List<StormProvenanceEvent>)tuple.getValueByField("ProvenanceEvent");
-		String transactionKey = stormProvenance.get(0).getEventKey();
+		//String actionType = "MODIFY";
+		//List<StormProvenanceEvent> stormProvenance = (List<StormProvenanceEvent>)tuple.getValueByField("ProvenanceEvent");
+		//String transactionKey = stormProvenance.get(0).getEventKey();
 		
-		StormProvenanceEvent provenanceEvent = new StormProvenanceEvent(transactionKey, actionType, componentId, componentType);
-	    stormProvenance.add(provenanceEvent);
+		//StormProvenanceEvent provenanceEvent = new StormProvenanceEvent(transactionKey, actionType, componentId, componentType);
+	    //stormProvenance.add(provenanceEvent);
 		
 	    enrichedInventoryUpdate.setProductId(inventoryUpdate.getProductId());
 	    enrichedInventoryUpdate.setLocationId(inventoryUpdate.getLocationId());
 		
-		System.out.println("********************** Enriching InventoryUpdate: " + transactionKey);	    
+		//System.out.println("********************** Enriching InventoryUpdate: " + transactionKey);	    
 	    ResultSet resultSet = null;
 	    Boolean matchedProduct = false;
 	    Boolean matchedLocation = false;
@@ -113,14 +113,14 @@ public class EnrichInventoryUpdate extends BaseRichBolt {
 		}
 		
 		if(matchedLocation && matchedProduct){
-			actionType = "SEND";
-			provenanceEvent = new StormProvenanceEvent(transactionKey, actionType, componentId, componentType);
-			provenanceEvent.setTargetDataRepositoryType("HBASE");
-			provenanceEvent.setTargetDataRepositoryLocation(constants.getZkConnString() + ":" + constants.getZkHBasePath() + ":" + constants.getZkHBasePath());
-			stormProvenance.add(provenanceEvent);
+			//actionType = "SEND";
+			//provenanceEvent = new StormProvenanceEvent(transactionKey, actionType, componentId, componentType);
+			//provenanceEvent.setTargetDataRepositoryType("HBASE");
+			//provenanceEvent.setTargetDataRepositoryLocation(constants.getZkConnString() + ":" + constants.getZkHBasePath() + ":" + constants.getZkHBasePath());
+			//stormProvenance.add(provenanceEvent);
 			
 			//persistTransactionToHbase(enrichedInventoryUpdate);
-			collector.emit(tuple, new Values((EnrichedInventoryUpdate)enrichedInventoryUpdate, stormProvenance));
+			collector.emit(tuple, new Values((EnrichedInventoryUpdate)enrichedInventoryUpdate));
 			collector.ack(tuple);
 		}
 		else{
