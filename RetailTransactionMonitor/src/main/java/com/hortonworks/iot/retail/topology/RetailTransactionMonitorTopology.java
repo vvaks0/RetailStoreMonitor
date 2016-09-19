@@ -15,6 +15,7 @@ import org.apache.storm.kafka.KafkaSpout;
 import org.apache.storm.kafka.KeyValueSchemeAsMultiScheme;
 import org.apache.storm.kafka.SpoutConfig;
 import org.apache.storm.kafka.ZkHosts;
+import org.apache.storm.shade.org.joda.time.Duration;
 import org.apache.storm.spout.SchemeAsMultiScheme;
 import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.topology.base.BaseWindowedBolt;
@@ -113,15 +114,14 @@ public class RetailTransactionMonitorTopology {
 	      socialMediaKafkaSpoutConfig.startOffsetTime = kafka.api.OffsetRequest.LatestTime();
 	      KafkaSpout socialMediaKafkaSpout = new KafkaSpout(socialMediaKafkaSpoutConfig);
 	      
-	      BaseWindowedBolt transactionMonitorBolt = new TransactionMonitor().withWindow(new Count(10), new Count(5));
 	      
 	      builder.setSpout("IncomingTransactionsKafkaSpout", incomingTransactionsKafkaSpout);
 	      builder.setBolt("InstantiateProvenance", new InstantiateProvenance(), 1).shuffleGrouping("IncomingTransactionsKafkaSpout");
 	      builder.setBolt("EnrichTransaction", new EnrichTransaction(), 1).shuffleGrouping("InstantiateProvenance");
 	      builder.setBolt("PublishTransaction", new PublishTransaction(), 1).shuffleGrouping("EnrichTransaction", "TransactionStream");
-	      builder.setBolt("TransactionMonitor", transactionMonitorBolt,1).shuffleGrouping("EnrichTransaction", "TransactionStream").shuffleGrouping("EnrichInventoryUpdate", "InventoryStream");
-	      builder.setBolt("PublishTheftAlert", new PublishFraudAlert(), 1).shuffleGrouping("TransactionMonitor", "PotentialTheftStream");
-	      builder.setBolt("AtlasLineageReporter", new AtlasLineageReporter(), 1).shuffleGrouping("TransactionMonitor", "ProvenanceRegistrationStream");
+	      //builder.setBolt("TransactionMonitor", new TransactionMonitor().withWindow(new Duration(10), new Duration(5)),1).shuffleGrouping("EnrichTransaction", "TransactionStream").shuffleGrouping("EnrichInventoryUpdate", "InventoryStream");
+	      //builder.setBolt("PublishTheftAlert", new PublishFraudAlert(), 1).shuffleGrouping("TransactionMonitor", "PotentialTheftStream");
+	      //builder.setBolt("AtlasLineageReporter", new AtlasLineageReporter(), 1).shuffleGrouping("TransactionMonitor", "ProvenanceRegistrationStream");
 	      
 	      builder.setSpout("InventoryUpdatesKafkaSpout", inventoryUpdatesKafkaSpout);
 	      builder.setBolt("EnrichInventoryUpdate", new EnrichInventoryUpdate(), 1).shuffleGrouping("InventoryUpdatesKafkaSpout");
