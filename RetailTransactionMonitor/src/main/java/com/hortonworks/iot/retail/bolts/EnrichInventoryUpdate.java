@@ -203,6 +203,6 @@ public class EnrichInventoryUpdate extends BaseRichBolt {
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("EnrichedInventoryUpdate","ProvenanceEvent"));
+		declarer.declareStream("InventoryStream", new Fields("EnrichedInventoryUpdate","ProvenanceEvent"));
 	}
 }
