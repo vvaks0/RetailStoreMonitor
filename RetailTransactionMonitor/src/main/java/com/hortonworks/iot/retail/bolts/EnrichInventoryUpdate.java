@@ -75,7 +75,7 @@ public class EnrichInventoryUpdate extends BaseRichBolt {
 	    Boolean matchedLocation = false;
 		try {
 			List<Product> products = new ArrayList<Product>();
-			resultSet = conn.createStatement().executeQuery("SELECT * FROM \"Product\" WHERE \"productId\" = '" + enrichedInventoryUpdate.getProductId() + "')");
+			resultSet = conn.createStatement().executeQuery("SELECT * FROM \"Product\" WHERE \"productId\" = '" + enrichedInventoryUpdate.getProductId() + "'");
 			while (resultSet.next()) {
 		    	System.out.println("******************** " + 
     					resultSet.getString("productId") + "," +
