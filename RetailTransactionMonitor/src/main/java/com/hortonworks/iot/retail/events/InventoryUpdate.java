@@ -1,9 +1,5 @@
 package com.hortonworks.iot.retail.events;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.annotate.JsonProperty;
-
-@JsonIgnoreProperties(value = { "state","status" })
 public class InventoryUpdate {
 	private String productId;
 	private String locationId;
@@ -11,7 +7,6 @@ public class InventoryUpdate {
 	public String getLocationId() {
 		return locationId;
 	}
-	@JsonProperty("serialNumber")
 	public void setLocationId(String locationId) {
 		this.locationId = locationId;
 	}
