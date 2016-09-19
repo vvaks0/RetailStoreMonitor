@@ -35,6 +35,7 @@ import org.apache.storm.hdfs.bolt.sync.CountSyncPolicy;
 import org.apache.storm.hdfs.bolt.sync.SyncPolicy; */
 
 import com.hortonworks.iot.retail.bolts.AtlasLineageReporter;
+import com.hortonworks.iot.retail.bolts.EnrichInventoryUpdate;
 import com.hortonworks.iot.retail.bolts.EnrichTransaction;
 import com.hortonworks.iot.retail.bolts.TransactionMonitor;
 import com.hortonworks.iot.retail.bolts.InstantiateProvenance;
@@ -123,7 +124,7 @@ public class RetailTransactionMonitorTopology {
 	      builder.setBolt("AtlasLineageReporter", new AtlasLineageReporter(), 1).shuffleGrouping("TransactionMonitor", "ProvenanceRegistrationStream");
 	      
 	      builder.setSpout("InventoryUpdatesKafkaSpout", inventoryUpdatesKafkaSpout);
-	      builder.setBolt("EnrichInventoryUpdate", new EnrichTransaction(), 1).shuffleGrouping("InventoryUpdatesKafkaSpout");
+	      builder.setBolt("EnrichInventoryUpdate", new EnrichInventoryUpdate(), 1).shuffleGrouping("InventoryUpdatesKafkaSpout");
 	      
 	      //builder.setSpout("SocialMediaKafkaSpout", socialMediaKafkaSpout);
 	      //builder.setSpout("CustomerTransactionValidationKafkaSpout", new KafkaSpout(), 1);
