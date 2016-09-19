@@ -120,6 +120,7 @@ public class EnrichInventoryUpdate extends BaseRichBolt {
 			//stormProvenance.add(provenanceEvent);
 			
 			//persistTransactionToHbase(enrichedInventoryUpdate);
+			System.out.println("********************** EnrichInventory execute() emitting Tuple");
 			collector.emit(tuple, new Values((EnrichedInventoryUpdate)enrichedInventoryUpdate));
 			collector.ack(tuple);
 		}
@@ -203,6 +204,6 @@ public class EnrichInventoryUpdate extends BaseRichBolt {
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declareStream("InventoryStream", new Fields("EnrichedInventoryUpdate","ProvenanceEvent"));
+		declarer.declareStream("InventoryStream", new Fields("EnrichedInventoryUpdate"));
 	}
 }

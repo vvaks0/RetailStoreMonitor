@@ -128,6 +128,7 @@ public class EnrichTransaction extends BaseRichBolt {
 			stormProvenance.add(provenanceEvent);
 			
 			persistTransactionToHbase(enrichedTransaction);
+			System.out.println("********************** EnrichTransaction execute() emitting Tuple");
 			collector.emit(tuple, new Values((EnrichedTransaction)enrichedTransaction, stormProvenance));
 			collector.ack(tuple);
 		}
