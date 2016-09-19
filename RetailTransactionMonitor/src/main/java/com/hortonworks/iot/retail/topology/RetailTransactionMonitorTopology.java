@@ -117,10 +117,10 @@ public class RetailTransactionMonitorTopology {
 	      builder.setSpout("IncomingTransactionsKafkaSpout", incomingTransactionsKafkaSpout);
 	      builder.setBolt("InstantiateProvenance", new InstantiateProvenance(), 1).shuffleGrouping("IncomingTransactionsKafkaSpout");
 	      builder.setBolt("EnrichTransaction", new EnrichTransaction(), 1).shuffleGrouping("InstantiateProvenance");
-	      builder.setBolt("PublishTransaction", new PublishTransaction(), 1).shuffleGrouping("EnrichTransaction").directGrouping("TransactionMonitor", "TransactionStream");
-	      builder.setBolt("TransactionMonitor", transactionMonitorBolt,1).shuffleGrouping("EnrichTransaction");
-	      builder.setBolt("PublishTheftAlert", new PublishFraudAlert(), 1).shuffleGrouping("TransactionMonitor", "PotentialTheftStream");
-	      builder.setBolt("AtlasLineageReporter", new AtlasLineageReporter(), 1).shuffleGrouping("TransactionMonitor", "ProvenanceRegistrationStream");
+	      builder.setBolt("PublishTransaction", new PublishTransaction(), 1).shuffleGrouping("EnrichTransaction");
+	      //builder.setBolt("TransactionMonitor", transactionMonitorBolt,1).shuffleGrouping("EnrichTransaction");
+	      //builder.setBolt("PublishTheftAlert", new PublishFraudAlert(), 1).shuffleGrouping("TransactionMonitor", "PotentialTheftStream");
+	      //builder.setBolt("AtlasLineageReporter", new AtlasLineageReporter(), 1).shuffleGrouping("TransactionMonitor", "ProvenanceRegistrationStream");
 	      
 	      builder.setSpout("InventoryUpdatesKafkaSpout", inventoryUpdatesKafkaSpout);
 	      builder.setBolt("EnrichInventoryUpdate", new EnrichTransaction(), 1).shuffleGrouping("InventoryUpdatesKafkaSpout").directGrouping("TransactionMonitor","InventoryStream");
