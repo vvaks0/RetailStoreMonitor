@@ -66,7 +66,7 @@ public class TransactionMonitor extends BaseWindowedBolt {
 		while(tupleWindowIterator.hasNext()){
 			tuple = tupleWindowIterator.next();
 			
-			if(tuple instanceof EnrichedTransaction){			
+			if(tuple.getSourceStreamId().equalsIgnoreCase("TransactionStream")){			
 				actionType = "MODIFY";
 				transaction = (EnrichedTransaction) tuple.getValueByField("EnrichedTransaction");
 				stormProvenance = (List<StormProvenanceEvent>)tuple.getValueByField("ProvenanceEvent");
@@ -78,7 +78,7 @@ public class TransactionMonitor extends BaseWindowedBolt {
 				
 				collector.emit("ProvenanceRegistrationStream", new Values(stormProvenance));
 				collector.ack(tuple);
-			}else if(tuple instanceof EnrichedInventoryUpdate){
+			}else if(tuple.getSourceStreamId().equalsIgnoreCase("InventoryStream")){
 				enrichedInventoryUpdate = (EnrichedInventoryUpdate)tuple.getValueByField("EnrichedInventoryUpdate");
 				inventoryUpdates.put(enrichedInventoryUpdate.getProductId(), enrichedInventoryUpdate);
 				collector.ack(tuple);
