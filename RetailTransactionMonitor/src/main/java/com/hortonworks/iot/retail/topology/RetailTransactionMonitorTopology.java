@@ -40,6 +40,7 @@ import com.hortonworks.iot.retail.bolts.EnrichInventoryUpdate;
 import com.hortonworks.iot.retail.bolts.EnrichTransaction;
 import com.hortonworks.iot.retail.bolts.TransactionMonitor;
 import com.hortonworks.iot.retail.bolts.InstantiateProvenance;
+import com.hortonworks.iot.retail.bolts.MergeStreams;
 import com.hortonworks.iot.retail.bolts.PublishFraudAlert;
 import com.hortonworks.iot.retail.bolts.PublishTransaction;
 import com.hortonworks.iot.retail.util.Constants;
@@ -118,13 +119,15 @@ public class RetailTransactionMonitorTopology {
 	      builder.setSpout("IncomingTransactionsKafkaSpout", incomingTransactionsKafkaSpout);
 	      builder.setBolt("InstantiateProvenance", new InstantiateProvenance(), 1).shuffleGrouping("IncomingTransactionsKafkaSpout");
 	      builder.setBolt("EnrichTransaction", new EnrichTransaction(), 1).shuffleGrouping("InstantiateProvenance");
-	      builder.setBolt("PublishTransaction", new PublishTransaction(), 1).shuffleGrouping("EnrichTransaction", "TransactionStream");
+	      //builder.setBolt("PublishTransaction", new PublishTransaction(), 1).shuffleGrouping("EnrichTransaction", "TransactionStream");
 	      //builder.setBolt("TransactionMonitor", new TransactionMonitor().withWindow(new Duration(10), new Duration(5)),1).shuffleGrouping("EnrichTransaction", "TransactionStream").shuffleGrouping("EnrichInventoryUpdate", "InventoryStream");
 	      //builder.setBolt("PublishTheftAlert", new PublishFraudAlert(), 1).shuffleGrouping("TransactionMonitor", "PotentialTheftStream");
 	      //builder.setBolt("AtlasLineageReporter", new AtlasLineageReporter(), 1).shuffleGrouping("TransactionMonitor", "ProvenanceRegistrationStream");
 	      
 	      builder.setSpout("InventoryUpdatesKafkaSpout", inventoryUpdatesKafkaSpout);
 	      builder.setBolt("EnrichInventoryUpdate", new EnrichInventoryUpdate(), 1).shuffleGrouping("InventoryUpdatesKafkaSpout");
+	      
+	      builder.setBolt("MergeStreams", new MergeStreams(), 1).shuffleGrouping("EnrichTransaction", "TransactionStream").shuffleGrouping("EnrichInventoryUpdate", "InventoryStream");
 	      
 	      //builder.setSpout("SocialMediaKafkaSpout", socialMediaKafkaSpout);
 	      //builder.setSpout("CustomerTransactionValidationKafkaSpout", new KafkaSpout(), 1);
