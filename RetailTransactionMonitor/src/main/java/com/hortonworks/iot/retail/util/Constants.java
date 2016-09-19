@@ -9,6 +9,7 @@ public class Constants {
 	private String zkHBasePath = "/hbase-unsecure";
 	private String zkConnString;
 	private String incomingTransactionsTopicName = "IncomingTransactions";
+	private String inventoryUpdatesTopicName = "InventoryUpdate";
 	private String socialMediaTopicName = "SocialMedia";
 	
 	private String cometdHost = "sandbox.hortonworks.com";
@@ -186,5 +187,13 @@ public class Constants {
 
 	public void setSocialMediaTopicName(String socialMediaTopicName) {
 		this.socialMediaTopicName = socialMediaTopicName;
+	}
+
+	public String getInventoryUpdatesTopicName() {
+		return inventoryUpdatesTopicName;
+	}
+
+	public void setInventoryUpdatesTopicName(String inventoryUpdatesTopicName) {
+		this.inventoryUpdatesTopicName = inventoryUpdatesTopicName;
 	}
 }

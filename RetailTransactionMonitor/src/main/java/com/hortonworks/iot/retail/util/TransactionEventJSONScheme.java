@@ -25,14 +25,13 @@ import org.apache.storm.tuple.Values;
 
 public class TransactionEventJSONScheme implements KeyValueScheme {
 		private static final long serialVersionUID = 1L;
-		private static final Charset UTF8 = Charset.forName("UTF-8");
 
 		public List<Object> deserializeKeyAndValue(ByteBuffer key, ByteBuffer value) {
 			String eventKey = StringScheme.deserializeString(key);
 			String eventJSONString = StringScheme.deserializeString(value);
 	        IncomingTransaction incomingTransaction = null;
 	        ObjectMapper mapper = new ObjectMapper();
-	        System.out.println("******************** Recieved Incoming Event... \n key: " + eventKey + "\n value: " + eventJSONString);
+	        System.out.println("******************** Recieved IncomingTransaction... \n key: " + eventKey + "\n value: " + eventJSONString);
 	        try {
 				incomingTransaction = mapper.readValue(eventJSONString, IncomingTransaction.class);
 			} catch (JsonParseException e) {
@@ -51,7 +50,6 @@ public class TransactionEventJSONScheme implements KeyValueScheme {
 
 		@Override
 		public List<Object> deserialize(ByteBuffer arg0) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 }

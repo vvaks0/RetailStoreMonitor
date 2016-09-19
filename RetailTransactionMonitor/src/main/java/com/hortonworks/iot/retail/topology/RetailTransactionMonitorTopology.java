@@ -17,6 +17,9 @@ import org.apache.storm.kafka.SpoutConfig;
 import org.apache.storm.kafka.ZkHosts;
 import org.apache.storm.spout.SchemeAsMultiScheme;
 import org.apache.storm.topology.TopologyBuilder;
+import org.apache.storm.topology.base.BaseWindowedBolt;
+
+import static org.apache.storm.topology.base.BaseWindowedBolt.Count;
 
 /*
 import org.apache.storm.hdfs.bolt.HdfsBolt;
@@ -37,6 +40,7 @@ import com.hortonworks.iot.retail.bolts.InstantiateProvenance;
 import com.hortonworks.iot.retail.bolts.PublishFraudAlert;
 import com.hortonworks.iot.retail.bolts.PublishTransaction;
 import com.hortonworks.iot.retail.util.Constants;
+import com.hortonworks.iot.retail.util.InventoryUpdateEventJSONScheme;
 import com.hortonworks.iot.retail.util.TransactionEventJSONScheme;
 
 /*
@@ -84,10 +88,8 @@ public class RetailTransactionMonitorTopology {
         System.out.println("********************** Cometd URI: " + constants.getPubSubUrl());
 	  	  
 	      Config conf = new Config(); 
-	      //BrokerHosts hosts = new ZkHosts(Constants.zkConnString);
 	      BrokerHosts hosts = new ZkHosts(constants.getZkConnString(), constants.getZkKafkaPath());
 	      
-	      //SpoutConfig incomingTransactionsKafkaSpoutConfig = new SpoutConfig(hosts, Constants.incomingTransactionsTopicName, "/" + Constants.incomingTransactionsTopicName, UUID.randomUUID().toString());
 	      SpoutConfig incomingTransactionsKafkaSpoutConfig = new SpoutConfig(hosts, constants.getIncomingTransactionsTopicName(), constants.getZkKafkaPath(), UUID.randomUUID().toString());
 	      incomingTransactionsKafkaSpoutConfig.scheme = new KeyValueSchemeAsMultiScheme(new TransactionEventJSONScheme());
 	      incomingTransactionsKafkaSpoutConfig.ignoreZkOffsets = true;
@@ -95,7 +97,13 @@ public class RetailTransactionMonitorTopology {
 	      incomingTransactionsKafkaSpoutConfig.startOffsetTime = kafka.api.OffsetRequest.LatestTime();
 	      KafkaSpout incomingTransactionsKafkaSpout = new KafkaSpout(incomingTransactionsKafkaSpoutConfig); 
 	      
-	      //SpoutConfig customerTransactionValidationKafkaSpoutConfig = new SpoutConfig(hosts, Constants.customerTransactionValidationTopicName, "/" + Constants.customerTransactionValidationTopicName, UUID.randomUUID().toString());
+	      SpoutConfig inventoryUpdatesKafkaSpoutConfig = new SpoutConfig(hosts, constants.getInventoryUpdatesTopicName(), constants.getZkKafkaPath(), UUID.randomUUID().toString());
+	      inventoryUpdatesKafkaSpoutConfig.scheme = new KeyValueSchemeAsMultiScheme(new InventoryUpdateEventJSONScheme());
+	      inventoryUpdatesKafkaSpoutConfig.ignoreZkOffsets = true;
+	      inventoryUpdatesKafkaSpoutConfig.useStartOffsetTimeIfOffsetOutOfRange = true;
+	      inventoryUpdatesKafkaSpoutConfig.startOffsetTime = kafka.api.OffsetRequest.LatestTime();
+	      KafkaSpout inventoryUpdatesKafkaSpout = new KafkaSpout(inventoryUpdatesKafkaSpoutConfig); 
+	      
 	      SpoutConfig socialMediaKafkaSpoutConfig = new SpoutConfig(hosts, constants.getSocialMediaTopicName(), constants.getZkKafkaPath(), UUID.randomUUID().toString());
 	      socialMediaKafkaSpoutConfig.scheme = new SchemeAsMultiScheme(new TransactionEventJSONScheme());
 	      socialMediaKafkaSpoutConfig.ignoreZkOffsets = true;
@@ -103,18 +111,24 @@ public class RetailTransactionMonitorTopology {
 	      socialMediaKafkaSpoutConfig.startOffsetTime = kafka.api.OffsetRequest.LatestTime();
 	      KafkaSpout socialMediaKafkaSpout = new KafkaSpout(socialMediaKafkaSpoutConfig);
 	      
+	      BaseWindowedBolt transactionMonitorBolt = new TransactionMonitor().withWindow(new Count(10), new Count(5));
+	      
 	      builder.setSpout("IncomingTransactionsKafkaSpout", incomingTransactionsKafkaSpout);
 	      builder.setBolt("InstantiateProvenance", new InstantiateProvenance(), 1).shuffleGrouping("IncomingTransactionsKafkaSpout");
-	      builder.setBolt("EnrichTransaction", new EnrichTransaction(), 1).shuffleGrouping("InstantiateProvenance");      
-	      builder.setBolt("TransactionMonitor", new TransactionMonitor(), 1).shuffleGrouping("EnrichTransaction");
-	      builder.setBolt("PublishFraudAlert", new PublishFraudAlert(), 1).shuffleGrouping("TransactionMonitor", "FraudulentTransactionStream");
-	      builder.setBolt("PublishTransaction", new PublishTransaction(), 1).shuffleGrouping("TransactionMonitor", "LegitimateTransactionStream");
+	      builder.setBolt("EnrichTransaction", new EnrichTransaction(), 1).shuffleGrouping("InstantiateProvenance");
+	      builder.setBolt("PublishTransaction", new PublishTransaction(), 1).shuffleGrouping("EnrichTransaction");
+	      builder.setBolt("TransactionMonitor", transactionMonitorBolt,1).shuffleGrouping("EnrichTransaction");
+	      builder.setBolt("PublishTheftAlert", new PublishFraudAlert(), 1).shuffleGrouping("TransactionMonitor", "PotentialTheftStream");
 	      builder.setBolt("AtlasLineageReporter", new AtlasLineageReporter(), 1).shuffleGrouping("TransactionMonitor", "ProvenanceRegistrationStream");
 	      
-	     // builder.setSpout("SocialMediaKafkaSpout", socialMediaKafkaSpout);
+	      builder.setSpout("InventoryUpdatesKafkaSpout", inventoryUpdatesKafkaSpout);
+	      builder.setBolt("EnrichInventoryUpdate", new EnrichTransaction(), 1).shuffleGrouping("InventoryUpdatesKafkaSpout");
+	      builder.setBolt("TransactionMonitor", transactionMonitorBolt,1).shuffleGrouping("EnrichInventoryUpdate");
+	      
+	      //builder.setSpout("SocialMediaKafkaSpout", socialMediaKafkaSpout);
 	      //builder.setSpout("CustomerTransactionValidationKafkaSpout", new KafkaSpout(), 1);
 	      //builder.setBolt("ProcessCustomerTransactionValidation", new ProcessCustomerTransactionValidation(), 1).shuffleGrouping("CustomerTransactionValidationKafkaSpout");
-	     // builder.setBolt("PublishAccountStatusUpdate", new PublishAccountStatusUpdate(), 1).shuffleGrouping("CustomerTransactionValidationKafkaSpout");
+	      //builder.setBolt("PublishAccountStatusUpdate", new PublishAccountStatusUpdate(), 1).shuffleGrouping("CustomerTransactionValidationKafkaSpout");
 	      
 	      conf.setNumWorkers(1);
 	      conf.setMaxSpoutPending(5000);

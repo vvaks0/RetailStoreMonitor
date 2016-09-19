@@ -8,7 +8,7 @@ import org.cometd.client.transport.ClientTransport;
 import org.cometd.client.transport.LongPollingTransport;
 import org.eclipse.jetty.client.HttpClient;
 
-import com.hortonworks.iot.retail.events.EnrichedTransaction;
+import com.hortonworks.iot.retail.events.Product;
 import com.hortonworks.iot.retail.util.Constants;
 
 /*
@@ -27,8 +27,6 @@ import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseRichBolt;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
-import org.apache.storm.tuple.Values;
-
 
 public class PublishFraudAlert extends BaseRichBolt {
 	private static final long serialVersionUID = 1L;
@@ -37,23 +35,27 @@ public class PublishFraudAlert extends BaseRichBolt {
 	private OutputCollector collector;
 	
 	public void execute(Tuple tuple) {
-		EnrichedTransaction transaction = (EnrichedTransaction) tuple.getValueByField("EnrichedTransaction");
+		@SuppressWarnings("unchecked")
+		Map<String,Product> lostInventory =(Map<String,Product>) tuple.getValueByField("InventoryUpdates");
 		
 		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("transactionId", transaction.getTransactionId());
-		data.put("transactionTimeStamp", transaction.getTransactionTimeStamp());
-		data.put("accountNumber", transaction.getAccountNumber());
-		data.put("accountType", transaction.getAccountType());
-		data.put("latitude", transaction.getLatitude());
-		data.put("longitude", transaction.getLongitude());
-		data.put("amount", Double.valueOf(transaction.getAmount()));
+		for (Map.Entry<String, Product> lostItem : lostInventory.entrySet()){
+			data.put("productId", lostItem.getValue().getProductId());
+			data.put("itemName", lostItem.getValue().getProductName());
+			data.put("category", lostItem.getValue().getProductCategory());
+			data.put("subCategory", lostItem.getValue().getProductSubCategory());
+			data.put("price", Double.valueOf(lostItem.getValue().getPrice()));
+			//data.put("latitude", lostItem.getLatitude());
+			//data.put("longitude", lostItem.getLongitude());
+			//data.put("brand", lostItem.getValue().getBrand());
 		
-		bayuexClient.getChannel(constants.getFraudAlertChannel()).publish(data);
+			bayuexClient.getChannel(constants.getFraudAlertChannel()).publish(data);
+		}
 		
-		collector.emit(tuple, new Values((EnrichedTransaction)transaction));
 		collector.ack(tuple);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void prepare(Map arg0, TopologyContext arg1, OutputCollector collector) {
 		this.constants = new Constants();
 		this.collector = collector;

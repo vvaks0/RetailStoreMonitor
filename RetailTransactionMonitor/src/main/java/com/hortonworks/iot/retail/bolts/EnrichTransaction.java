@@ -121,16 +121,54 @@ public class EnrichTransaction extends BaseRichBolt {
 		}
 		
 		if(matchedLocation && matchedProduct){
+			actionType = "SEND";
+			provenanceEvent = new StormProvenanceEvent(transactionKey, actionType, componentId, componentType);
+			provenanceEvent.setTargetDataRepositoryType("HBASE");
+			provenanceEvent.setTargetDataRepositoryLocation(constants.getZkConnString() + ":" + constants.getZkHBasePath() + ":" + constants.getZkHBasePath());
+			stormProvenance.add(provenanceEvent);
+			
+			persistTransactionToHbase(enrichedTransaction);
 			collector.emit(tuple, new Values((EnrichedTransaction)enrichedTransaction, stormProvenance));
 			collector.ack(tuple);
 		}
 		else{
-			System.out.println("The transaction refers to a Product and/or Locaiton that are not in the data store.");
+			System.out.println("The transaction refers to a Product and/or Location that are not in the data store.");
 			System.out.println("Account: " + incomingTransaction.getAccountNumber());
 			collector.ack(tuple);
 		}
 	}
-
+	
+	public void persistTransactionToHbase(EnrichedTransaction transaction){
+		try {
+			conn.createStatement().executeUpdate("UPSERT INTO \"TransactionHistory\" VALUES('" + 
+					transaction.getTransactionId() + "','" + 
+					transaction.getLocationId() + "','" + 
+					transaction.getAccountNumber() + "','" + 
+					transaction.getAccountType() + "'," + 
+					transaction.getAmount() + ",'" + 
+					transaction.getCurrency() + "','" + 
+					transaction.getIsCardPresent() + "'," + 
+					transaction.getTransactionTimeStamp() + ")");
+			conn.commit();
+			
+			List<Product> products = transaction.getProducts();
+			Iterator<Product> iterator = products.iterator();
+			Product currentProduct= new Product();
+			String transactionItemsUpsert = "";
+			while(iterator.hasNext()){
+				currentProduct = iterator.next();
+				transactionItemsUpsert = transactionItemsUpsert + " UPSERT INTO \"TransactionItems\" VALUES('" +
+					transaction.getTransactionId() + currentProduct.getProductId() + "','" +
+					transaction.getTransactionId() + "','" +
+					currentProduct.getProductId() + "') \n";
+			}
+			conn.createStatement().executeUpdate(transactionItemsUpsert);
+			conn.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@SuppressWarnings("deprecation")
 	public void prepare(Map arg0, TopologyContext context, OutputCollector collector) {
 		this.constants = new Constants();
