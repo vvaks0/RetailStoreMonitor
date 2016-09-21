@@ -133,7 +133,7 @@ public class RetailTransactionMonitorTopology {
 	      
 	      builder.setSpout("SocialMediaKafkaSpout", socialMediaKafkaSpout);
 	      builder.setBolt("ProcessSocialMediaEvent", new ProcessSocialMediaEvent(), 1).shuffleGrouping("SocialMediaKafkaSpout");
-	      builder.setBolt("PublishSocialMediaEvent", new PublishSocialSentiment(), 1).shuffleGrouping("ProcessSocialMediaEvent");
+	      builder.setBolt("PublishSocialMediaEvent", new PublishSocialSentiment(), 1).shuffleGrouping("ProcessSocialMediaEvent", "SocialMediaStream");
 	      
 	      conf.setNumWorkers(1);
 	      conf.setMaxSpoutPending(5000);
