@@ -234,12 +234,31 @@ public class EnrichTransaction extends BaseRichBolt {
 						+ "\"longitude\" VARCHAR, "
 						+ "\"brand\" VARCHAR) ");
 			conn.commit();
+			
+			conn.createStatement().executeUpdate("create table if not exists \"SocialMediaEvents\" "
+					+ "(\"eventTimeStamp\" VARCHAR PRIMARY KEY, "
+					+ "\"statement\" VARCHAR, "
+					+ "\"ipAddress\" VARCHAR, "
+					+ "\"latitude\" VARCHAR, "
+					+ "\"longitude\" VARCHAR, "
+					+ "\"latitude\" VARCHAR, "
+					+ "\"sentiment\" INTEGER)");
+			conn.commit();
+			
+			conn.createStatement().executeUpdate("create table if not exists \"Inventory\" "
+					+ "(\"productId\" VARCHAR PRIMARY KEY, "
+					+ "\"locationId\" VARCHAR, "
+					+ "\"stock\" INTEGET) ");
+			conn.commit();
+			
 			System.out.println("******************** EnrichTransaction prepare() Phoenix Tables DDL requests commited...");
 			
 			while(!hbaseAdmin.tableExists("TransactionHistory") 
 				  && !hbaseAdmin.tableExists("TransactionItem") 
 				  && !hbaseAdmin.tableExists("Product") 
-				  && !hbaseAdmin.tableExists("Location")){
+				  && !hbaseAdmin.tableExists("Location")
+				  && !hbaseAdmin.tableExists("Inventory")
+				  && !hbaseAdmin.tableExists("SocialMediaEvents")){
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {

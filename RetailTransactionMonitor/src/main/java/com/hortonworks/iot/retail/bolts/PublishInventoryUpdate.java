@@ -28,7 +28,7 @@ import org.apache.storm.topology.base.BaseRichBolt;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
 
-public class PublishFraudAlert extends BaseRichBolt {
+public class PublishInventoryUpdate extends BaseRichBolt {
 	private static final long serialVersionUID = 1L;
 	private Constants constants;
 	private BayeuxClient bayuexClient;
@@ -36,7 +36,7 @@ public class PublishFraudAlert extends BaseRichBolt {
 	
 	public void execute(Tuple tuple) {
 		@SuppressWarnings("unchecked")
-		Map<String,Product> lostInventory =(Map<String,Product>) tuple.getValueByField("InventoryUpdates");
+		Map<String,Product> lostInventory = (Map<String,Product>) tuple.getValueByField("InventoryUpdates");
 		
 		Map<String, Object> data = new HashMap<String, Object>();
 		for (Map.Entry<String, Product> lostItem : lostInventory.entrySet()){
@@ -49,7 +49,7 @@ public class PublishFraudAlert extends BaseRichBolt {
 			//data.put("longitude", lostItem.getLongitude());
 			//data.put("brand", lostItem.getValue().getBrand());
 		
-			bayuexClient.getChannel(constants.getFraudAlertChannel()).publish(data);
+			//bayuexClient.getChannel(constants.getFraudAlertChannel()).publish(data);
 		}
 		
 		collector.ack(tuple);
