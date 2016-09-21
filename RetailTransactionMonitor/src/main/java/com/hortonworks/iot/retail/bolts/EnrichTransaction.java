@@ -241,7 +241,6 @@ public class EnrichTransaction extends BaseRichBolt {
 					+ "\"ipAddress\" VARCHAR, "
 					+ "\"latitude\" VARCHAR, "
 					+ "\"longitude\" VARCHAR, "
-					+ "\"latitude\" VARCHAR, "
 					+ "\"sentiment\" INTEGER)");
 			conn.commit();
 			
