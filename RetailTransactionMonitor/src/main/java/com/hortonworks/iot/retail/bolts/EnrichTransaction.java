@@ -241,13 +241,13 @@ public class EnrichTransaction extends BaseRichBolt {
 					+ "\"ipAddress\" VARCHAR, "
 					+ "\"latitude\" VARCHAR, "
 					+ "\"longitude\" VARCHAR, "
-					+ "\"sentiment\" INTEGER)");
+					+ "\"sentiment\" INTEGER) ");
 			conn.commit();
 			
 			conn.createStatement().executeUpdate("create table if not exists \"Inventory\" "
 					+ "(\"productId\" VARCHAR PRIMARY KEY, "
 					+ "\"locationId\" VARCHAR, "
-					+ "\"stock\" INTEGET) ");
+					+ "\"stock\" INTEGER) ");
 			conn.commit();
 			
 			System.out.println("******************** EnrichTransaction prepare() Phoenix Tables DDL requests commited...");
