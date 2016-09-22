@@ -65,13 +65,13 @@ public class ProcessSocialMediaEvent extends BaseRichBolt {
 	
 	public void persistTransactionToHbase(SocialMediaEvent event){
 		try {
-			conn.createStatement().executeUpdate("UPSERT INTO \"SocialMediaEvnets\" VALUES('" + 
+			conn.createStatement().executeUpdate("UPSERT INTO \"SocialMediaEvents\" VALUES('" + 
 					event.getEventTimeStamp() + "','" + 
 					event.getStatement() + "','" + 
 					event.getIpAddress() + "','" + 
 					event.getLatitude() + "'," + 
-					event.getLongitude() + ",'" + 
-					event.getSentiment() + "')");
+					event.getLongitude() + "," + 
+					event.getSentiment() + ")");
 			conn.commit();
 		} catch (SQLException e) {
 			e.printStackTrace();
