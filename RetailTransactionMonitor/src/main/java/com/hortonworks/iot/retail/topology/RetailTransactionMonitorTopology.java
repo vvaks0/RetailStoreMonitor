@@ -112,28 +112,28 @@ public class RetailTransactionMonitorTopology {
 	      KafkaSpout inventoryUpdatesKafkaSpout = new KafkaSpout(inventoryUpdatesKafkaSpoutConfig); 
 	      
 	      SpoutConfig socialMediaKafkaSpoutConfig = new SpoutConfig(hosts, constants.getSocialMediaTopicName(), constants.getZkKafkaPath(), UUID.randomUUID().toString());
-	      socialMediaKafkaSpoutConfig.scheme = new SchemeAsMultiScheme(new SocialMediaEventJSONScheme());
-	      //socialMediaKafkaSpoutConfig.ignoreZkOffsets = true;
-	      //socialMediaKafkaSpoutConfig.useStartOffsetTimeIfOffsetOutOfRange = true;
-	      //socialMediaKafkaSpoutConfig.startOffsetTime = kafka.api.OffsetRequest.LatestTime();
+	      socialMediaKafkaSpoutConfig.scheme = new KeyValueSchemeAsMultiScheme(new SocialMediaEventJSONScheme());
+	      socialMediaKafkaSpoutConfig.ignoreZkOffsets = true;
+	      socialMediaKafkaSpoutConfig.useStartOffsetTimeIfOffsetOutOfRange = true;
+	      socialMediaKafkaSpoutConfig.startOffsetTime = kafka.api.OffsetRequest.LatestTime();
 	      KafkaSpout socialMediaKafkaSpout = new KafkaSpout(socialMediaKafkaSpoutConfig);
 	      
 	      
-	      //builder.setSpout("IncomingTransactionsKafkaSpout", incomingTransactionsKafkaSpout);
-	      //builder.setBolt("InstantiateProvenance", new InstantiateProvenance(), 1).shuffleGrouping("IncomingTransactionsKafkaSpout");
-	      //builder.setBolt("EnrichTransaction", new EnrichTransaction(), 1).shuffleGrouping("InstantiateProvenance");
-	      //builder.setBolt("PublishTransaction", new PublishTransaction(), 1).shuffleGrouping("EnrichTransaction", "TransactionStream");
+	      builder.setSpout("IncomingTransactionsKafkaSpout", incomingTransactionsKafkaSpout);
+	      builder.setBolt("InstantiateProvenance", new InstantiateProvenance(), 1).shuffleGrouping("IncomingTransactionsKafkaSpout");
+	      builder.setBolt("EnrichTransaction", new EnrichTransaction(), 1).shuffleGrouping("InstantiateProvenance");
+	      builder.setBolt("PublishTransaction", new PublishTransaction(), 1).shuffleGrouping("EnrichTransaction", "TransactionStream");
 	      //builder.setBolt("TransactionMonitor", new TransactionMonitor().withWindow(new Duration(10), new Duration(5)),1).shuffleGrouping("EnrichTransaction", "TransactionStream").shuffleGrouping("EnrichInventoryUpdate", "InventoryStream");
 	      //builder.setBolt("AtlasLineageReporter", new AtlasLineageReporter(), 1).shuffleGrouping("TransactionMonitor", "ProvenanceRegistrationStream");
 	      
-	      //builder.setSpout("InventoryUpdatesKafkaSpout", inventoryUpdatesKafkaSpout);
-	      //builder.setBolt("EnrichInventoryUpdate", new EnrichInventoryUpdate(), 1).shuffleGrouping("InventoryUpdatesKafkaSpout");
-	      //builder.setBolt("PublishInventoryUpdate", new PublishInventoryUpdate(), 1).shuffleGrouping("EnrichInventoryUpdate", "InventoryStream");
+	      builder.setSpout("InventoryUpdatesKafkaSpout", inventoryUpdatesKafkaSpout);
+	      builder.setBolt("EnrichInventoryUpdate", new EnrichInventoryUpdate(), 1).shuffleGrouping("InventoryUpdatesKafkaSpout");
+	      builder.setBolt("PublishInventoryUpdate", new PublishInventoryUpdate(), 1).shuffleGrouping("EnrichInventoryUpdate", "InventoryStream");
 	      //builder.setBolt("MergeStreams", new MergeStreams().withWindow(new Count(12), new Count(6)), 1).shuffleGrouping("EnrichTransaction", "TransactionStream");//.shuffleGrouping("EnrichInventoryUpdate", "InventoryStream");
 	      
 	      builder.setSpout("SocialMediaKafkaSpout", socialMediaKafkaSpout);
 	      builder.setBolt("ProcessSocialMediaEvent", new ProcessSocialMediaEvent(), 1).shuffleGrouping("SocialMediaKafkaSpout");
-	      //builder.setBolt("PublishSocialMediaEvent", new PublishSocialSentiment(), 1).shuffleGrouping("ProcessSocialMediaEvent", "SocialMediaStream");
+	      builder.setBolt("PublishSocialMediaEvent", new PublishSocialSentiment(), 1).shuffleGrouping("ProcessSocialMediaEvent", "SocialMediaStream");
 	      
 	      conf.setNumWorkers(1);
 	      conf.setMaxSpoutPending(5000);
