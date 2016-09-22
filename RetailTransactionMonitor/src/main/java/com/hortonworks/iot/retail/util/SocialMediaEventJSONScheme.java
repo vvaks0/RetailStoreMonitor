@@ -2,7 +2,6 @@ package com.hortonworks.iot.retail.util;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.util.List;
 
 
@@ -10,7 +9,6 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.hortonworks.iot.retail.events.IncomingTransaction;
 import com.hortonworks.iot.retail.events.SocialMediaEvent;
 
 /*
