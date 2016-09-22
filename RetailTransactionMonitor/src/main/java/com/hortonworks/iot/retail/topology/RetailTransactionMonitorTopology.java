@@ -115,7 +115,7 @@ public class RetailTransactionMonitorTopology {
 	      socialMediaKafkaSpoutConfig.scheme = new SchemeAsMultiScheme(new SocialMediaEventJSONScheme());
 	      socialMediaKafkaSpoutConfig.ignoreZkOffsets = true;
 	      socialMediaKafkaSpoutConfig.useStartOffsetTimeIfOffsetOutOfRange = true;
-	      socialMediaKafkaSpoutConfig.startOffsetTime = kafka.api.OffsetRequest.EarliestTime();
+	      socialMediaKafkaSpoutConfig.startOffsetTime = kafka.api.OffsetRequest.LatestTime();
 	      KafkaSpout socialMediaKafkaSpout = new KafkaSpout(socialMediaKafkaSpoutConfig);
 	      
 	      

@@ -10,7 +10,7 @@ public class Constants {
 	private String zkConnString;
 	private String incomingTransactionsTopicName = "IncomingTransactions";
 	private String inventoryUpdatesTopicName = "InventoryUpdate";
-	private String socialMediaTopicName = "SocialMedia";
+	private String socialMediaTopicName = "SocialMediaEvents";
 	
 	private String cometdHost = "sandbox.hortonworks.com";
 	private String cometdPort = "8091";
