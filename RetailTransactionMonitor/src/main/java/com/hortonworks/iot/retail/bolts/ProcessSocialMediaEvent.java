@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -56,7 +57,7 @@ public class ProcessSocialMediaEvent extends BaseRichBolt {
 	
 	public void execute(Tuple tuple) {
 		SocialMediaEvent socialMediaEvent = (SocialMediaEvent) tuple.getValueByField("SocialMediaEvent");
-			
+			socialMediaEvent.setSentiment(String.valueOf(new Random().nextInt(1-1) + 1));
 			persistTransactionToHbase(socialMediaEvent);
 			System.out.println("********************** ProcessMediaEvent execute() emitting Tuple");
 			collector.emit(tuple, new Values((SocialMediaEvent)socialMediaEvent));
@@ -71,7 +72,7 @@ public class ProcessSocialMediaEvent extends BaseRichBolt {
 					event.getIpAddress() + "','" + 
 					event.getLatitude() + "'," + 
 					event.getLongitude() + "," + 
-					event.getSentiment() + ")");
+					Integer.valueOf(event.getSentiment()) + ")");
 			conn.commit();
 		} catch (SQLException e) {
 			e.printStackTrace();
