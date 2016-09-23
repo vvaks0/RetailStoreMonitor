@@ -60,16 +60,6 @@ public class RetailDashboardUI extends HttpServlet{
 	    @SuppressWarnings("deprecation")
 		public void init(ServletConfig config) throws ServletException {
 	    	Configuration hbaseConfig = HBaseConfiguration.create();
-	        
-	    	try {
-				Class.forName("org.apache.phoenix.jdbc.PhoenixDriver");
-				conn =  DriverManager.getConnection("jdbc:phoenix:" + zkHost + ":" + zkPort + ":" + zkHBasePath);
-				System.out.println("got connection to Phoenix");
-	    	} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 	    	
 	    	super.init(config);
 	        System.out.println("Calling Init method and setting request to Initial");
@@ -119,6 +109,15 @@ public class RetailDashboardUI extends HttpServlet{
 			hbaseConfig.set("hbase.zookeeper.property.clientPort", zkPort);
 			hbaseConfig.set("zookeeper.znode.parent", zkHBasePath);
 			
+	    	try {
+				Class.forName("org.apache.phoenix.jdbc.PhoenixDriver");
+				conn =  DriverManager.getConnection("jdbc:phoenix:" + zkHost + ":" + zkPort + ":" + zkHBasePath);
+				System.out.println("got connection to Phoenix");
+	    	} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 	    }
 	    public void doTask(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	    	String accountNumber;
