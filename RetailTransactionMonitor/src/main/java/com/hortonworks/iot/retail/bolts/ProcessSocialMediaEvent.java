@@ -57,7 +57,7 @@ public class ProcessSocialMediaEvent extends BaseRichBolt {
 	
 	public void execute(Tuple tuple) {
 		SocialMediaEvent socialMediaEvent = (SocialMediaEvent) tuple.getValueByField("SocialMediaEvent");
-			socialMediaEvent.setSentiment(String.valueOf(new Random().nextInt(1-1) + 1));
+			socialMediaEvent.setSentiment(String.valueOf(new Random().nextInt(2)));
 			persistTransactionToHbase(socialMediaEvent);
 			System.out.println("********************** ProcessMediaEvent execute() emitting Tuple");
 			collector.emit(tuple, new Values((SocialMediaEvent)socialMediaEvent));
