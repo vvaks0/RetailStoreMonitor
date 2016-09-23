@@ -311,6 +311,26 @@ div#customer_container{
         var chart = new google.visualization.PieChart(document.getElementById('chart2'));
         chart.draw(data, options);
       }
+	
+	 function drawGeoChart() {
+	      var data = google.visualization.arrayToDataTable([
+	        ['City',   'Population'],
+	        ['NY',    8614],
+	        ['PA',   10011],
+	        ['NC',    7574],
+	        ['MA',    6574]
+	      ]);
+
+	      var options = {
+	        region: 'US',
+	        displayMode: 'regions',
+	        colorAxis: {minValue: 0, colors: ['red','orange','yellow','green']},
+	        resolution: 'provinces'
+	      };
+
+	      var chart = new google.visualization.GeoChart(document.getElementById('map1'));
+	      chart.draw(data, options);
+	    };
       /*
       function drawMap() {
 		var row = 0;        
@@ -609,12 +629,13 @@ div#customer_container{
     	  //if(${accountDetails.isAccountActive}==false){
           //	  document.getElementById("account_container").style.backgroundColor = "#FF0000"  
           // }
-    	  google.charts.load('current', {packages: ['corechart', 'bar', 'table', 'map', 'line']});
+    	  google.charts.load('current', {packages: ['corechart', 'bar', 'table', 'map', 'line','geochart']});
     	  //google.charts.setOnLoadCallback(drawTable);
     	  //google.charts.setOnLoadCallback(drawMap);
     	  google.charts.setOnLoadCallback(drawRevenueVsSentiment);
     	  google.charts.setOnLoadCallback(drawRevenueByCategoryChart);
     	  google.charts.setOnLoadCallback(drawRevenueBySubCategoryChart);
+    	  google.charts.setOnLoadCallback(drawGeoChart);
       }
 
     </script>
