@@ -104,6 +104,10 @@ div#customer_container{
 	width:45%;
 	height: 100%;
 	float: left;
+	border-top: solid 1px #333;
+	border-bottom: solid 1px #333;
+	border-left: solid 1px #333;
+	border-right: solid 1px #333;
 }
 
 .charts_section {
@@ -656,7 +660,7 @@ div#customer_container{
 				<div id="details" class="chart_container">
 	
 				</div>
-				<div id="map1" class="chart_container"></div>
+				<div id="map1" class="map_container"></div>
 			</div>
 		</div>
 		<div id="charts" class="section_container">
