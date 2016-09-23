@@ -212,36 +212,70 @@ div#customer_container{
   	var pubSubUrl = "http://" + cometdHost + ":" + cometdPort + "/cometd";
   	var alertChannel = "/fraudAlert";
     var incomingTransactionsChannel = "/incomingTransactions";
-  	var customerValidationChannel = "/accountStatusUpdate";
+  	var sentimentChannel = "/sentiment";
 	var preview = {};
 	var markers = {};
-	var fraudTable;
-	var legitTable;
 	var map;
-	var mapRowMappings = new Map();
+	var revenueSentimentChart;
+	var revenueSentimentChartData;
+	var currentRevenue;
+	var currentSentiment;
 	
-	dojo.ready(connectAccountStatusUpdateTopic)	
- 	  
-  	function connectAccountStatusUpdateTopic(){
-  		dojox.cometd.init(pubSubUrl);
+	dojo.ready(connectDeviceTopic)
+	function connectDeviceTopic(){
+			dojox.cometd.init(pubSubUrl);
+			dojox.cometd.subscribe("/*", function(message){
+				if(message.channel == incomingTransactionsChannel){
+					console.log(message);
+					
+					currentTimeStamp = message.data.timeStamp;
+					currentRevenue = currentRevenue + message.data.amount;
+					currentSentiment = currentSentiment + message.data.sentiment;
+					
+					revenueSentimentChartData.addRows([[currentTimeStam, currentRevenue, currentSentiment]]);
+					revenueSentimentChart.draw(revenueSentimentChartData, revenueSentimentChartChartOptions);
+				}else if(message.channel == alertChannel){
+					console.log(message);
+				}else{
+					console.log(message)
+				}	
+			});
+	  }
+	
+	function drawRevenueVsSentiment() {
+		  revenueSentimentChartData = new google.visualization.DataTable();
+		  revenueSentimentChartData.addColumn('string', 'TimeStamp');
+		  revenueSentimentChartData.addColumn('number', 'Revenue');
+		  revenueSentimentChartData.addColumn('number', 'Sentiment');
 
-  		dojox.cometd.subscribe("/*", function(message){
-  			if(message.channel == customerValidationChannel){
-  				console.log(message)
-  				var fraudulent = message.data.fraudulent;
-  				if(fraudulent=="true"){
-  					document.getElementById("account_container").style.backgroundColor = "#ED5C98";
-  					document.getElementById("accountStatus").innerHTML = "Suspended";
-  				}else{
-  					document.getElementById("account_container").style.backgroundColor = "#9CF";
-  					document.getElementById("accountStatus").innerHTML = "Active";
-  					//location.href='CustomerOverview?requestType=customerDetails&accountNumber=' + ${accountDetails.accountNumber};
-  				}
-  			}if(message.channel == incomingTransactionsChannel || message.channel == alertChannel){
-  				
-  			}
-  		});
-  	}
+		  revenueSentimentChartData.addRows([['0', 0, 0]]);
+		  revenueSentimentChartData.addRows([['1', 200, 1]]);
+		  revenueSentimentChartData.addRows([['2', 230, 2]]);
+		  revenueSentimentChartData.addRows([['3', 280, 3]]);
+		  revenueSentimentChartOptions = {
+				  chart: {
+			          title: 'Real Time Revenue Growth vs Real Time Brand Sentiment'
+			        },
+			        //width: 350,
+			        //height: 150,
+			        series: {
+			          // Gives each series an axis name that matches the Y-axis below.
+			          0: {axis: 'Revenue'},
+			          1: {axis: 'Brand Sentiment'}
+			        },
+			        axes: {
+			          // Adds labels to each axis; they don't have to match the axis names.
+			          y: {
+			            Revenue: {label: 'Revenue ($)'},
+			            Sentiment: {label: 'Brand Sentiment'}
+			          }
+			        }
+	   	  };
+
+		  revenueSentimentChart = new google.charts.Line(document.getElementById('details'));
+		  revenueSentimentChart.draw(revenueSentimentChartData, revenueSentimentChartOptions);
+	  }
+	
 	function drawRevenueByCategoryChart() {
         var data = google.visualization.arrayToDataTable([
 			['Product Category', 'Revenue'],
@@ -575,9 +609,10 @@ div#customer_container{
     	  //if(${accountDetails.isAccountActive}==false){
           //	  document.getElementById("account_container").style.backgroundColor = "#FF0000"  
           // }
-    	  google.charts.load('current', {packages: ['corechart', 'bar', 'table', 'map']});
+    	  google.charts.load('current', {packages: ['corechart', 'bar', 'table', 'map', 'line']});
     	  //google.charts.setOnLoadCallback(drawTable);
     	  //google.charts.setOnLoadCallback(drawMap);
+    	  google.charts.setOnLoadCallback(drawRevenueVsSentiment);
     	  google.charts.setOnLoadCallback(drawRevenueByCategoryChart);
     	  google.charts.setOnLoadCallback(drawRevenueBySubCategoryChart);
       }
