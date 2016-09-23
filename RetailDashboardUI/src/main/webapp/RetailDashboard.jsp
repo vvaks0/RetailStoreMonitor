@@ -578,8 +578,8 @@ div#customer_container{
     	  google.charts.load('current', {packages: ['corechart', 'bar', 'table', 'map']});
     	  //google.charts.setOnLoadCallback(drawTable);
     	  //google.charts.setOnLoadCallback(drawMap);
-    	  google.charts.setOnLoadCallback(drawRevenueByCategoryChart());
-    	  google.charts.setOnLoadCallback(drawRevenueBySubCategoryChart());
+    	  google.charts.setOnLoadCallback(drawRevenueByCategoryChart);
+    	  google.charts.setOnLoadCallback(drawRevenueBySubCategoryChart);
       }
 
     </script>
