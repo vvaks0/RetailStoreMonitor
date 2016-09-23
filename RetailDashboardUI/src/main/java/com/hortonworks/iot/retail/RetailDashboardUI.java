@@ -38,7 +38,7 @@ import org.cometd.client.transport.ClientTransport;
 import org.cometd.client.transport.LongPollingTransport;
 import org.eclipse.jetty.client.HttpClient;
 
-@WebServlet(name = "TransactionMonitorUI", urlPatterns = { "/CustomerOverview" })
+@WebServlet(name = "RetailDashboardUI", urlPatterns = { "/RetailDashboard" })
 public class RetailDashboardUI extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 		private static final String CONTENT_TYPE = "text/html; charset=windows-1252";
