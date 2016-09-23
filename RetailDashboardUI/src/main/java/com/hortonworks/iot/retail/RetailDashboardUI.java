@@ -45,6 +45,7 @@ public class RetailDashboardUI extends HttpServlet{
 	    private String requestType;
 	    private HTable customerAccountTable = null;
 	    private HTable transactionHistoryTable = null;
+	    private Connection conn;
 	    private String zkHost = "sandbox.hortonworks.com";
 	    private String zkPort = "2181";
 	    private String zkHBasePath = "/hbase-unsecure";
@@ -59,7 +60,17 @@ public class RetailDashboardUI extends HttpServlet{
 	    @SuppressWarnings("deprecation")
 		public void init(ServletConfig config) throws ServletException {
 	    	Configuration hbaseConfig = HBaseConfiguration.create();
-			
+	        
+	    	try {
+				Class.forName("org.apache.phoenix.jdbc.PhoenixDriver");
+				conn =  DriverManager.getConnection("jdbc:phoenix:" + zkHost + ":" + zkPort + ":" + zkHBasePath);
+				System.out.println("got connection to Phoenix");
+	    	} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+	    	
 	    	super.init(config);
 	        System.out.println("Calling Init method and setting request to Initial");
 	        requestType = "initial";
@@ -138,62 +149,83 @@ public class RetailDashboardUI extends HttpServlet{
 	        	request.setAttribute("cometdHost", cometdHost);
 	        	request.setAttribute("cometdPort", cometdListenPort);
 	        	request.setAttribute("mapAPIKey", mapAPIKey);
-	        	request.setAttribute("accountDetails", accountDetails);
-	        	request.setAttribute("transactionHistory", transactionHistory);
+	        	request.setAttribute("revenueByCategory", getRevenueByCategory(""));
+	        	request.setAttribute("revenueBySubCategory", getRevenueBySubCategory(""));
 	        	request.getRequestDispatcher("RetailDashboard.jsp").forward(request, response);
 	        } 
 	    }
-	    public Transaction getRevenueBySubCategory(String transactionId) {
-	    	String query = "SELECT A.\"locationId\", "
-	    	+ "C.\"productCategory\", "
-	    	+ "C.\"productSubCategory\", "
+	    public Map<String, Integer> getRevenueBySubCategory(String transactionId) {
+	    	Map<String, Integer> revenueBySubCategory = new HashMap<String, Integer>();
+	    	
+	    	String query = "SELECT C.\"productSubCategory\", "
+	    	    	+ "SUM(C.\"price\") as revenue "
+	    	    	+ "FROM \"TransactionHistory\" AS A "
+	    	    	+ "INNER JOIN \"TransactionItems\" AS B ON A.\"transactionId\" = B.\"transactionId\" "
+	    	    	+ "INNER JOIN \"Product\" AS C ON B.\"productId\" = C.\"productId\" "
+	    	    	+ "GROUP BY C.\"productSubCategory\"";
+	    	
+	    	ResultSet rst;
+			try {
+				rst = conn.createStatement().executeQuery(query);
+				while (rst.next()) {
+					revenueBySubCategory.put(rst.getString(1), rst.getInt(2));
+		        	System.out.println(rst.getString(1) + " " + rst.getString(2));
+		        }
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+	    	
+	    	return revenueBySubCategory;
+		}
+	    
+	    public Map<String, Integer> getRevenueByCategory(String transactionId) {
+	    	Map<String, Integer> revenueByCategory = new HashMap<String, Integer>();
+	    	
+	    	String query = "SELECT C.\"productCategory\", "
 	    	+ "SUM(C.\"price\") as revenue "
 	    	+ "FROM \"TransactionHistory\" AS A "
 	    	+ "INNER JOIN \"TransactionItems\" AS B ON A.\"transactionId\" = B.\"transactionId\" "
 	    	+ "INNER JOIN \"Product\" AS C ON B.\"productId\" = C.\"productId\" "
-	    	+ "GROUP BY A.\"locationId\", C.\"productCategory\", C.\"productSubCategory\"";
+	    	+ "GROUP BY C.\"productCategory\"";
 	    	
-	    	return null;
+			ResultSet rst;
+			try {
+				rst = conn.createStatement().executeQuery(query);
+				while (rst.next()) {
+					revenueByCategory.put(rst.getString(1), rst.getInt(2));
+		        	System.out.println(rst.getString(1) + " " + rst.getString(2));
+		        }
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			
+			return revenueByCategory;
 		}
 	    
-	    public Transaction getRevenueByCategory(String transactionId) {
-	    	String query = "SELECT A.\"locationId\", "
-	    	+ "C.\"productCategory\", "
-	    	+ "SUM(C.\"price\") as revenue "
-	    	+ "FROM \"TransactionHistory\" AS A "
-	    	+ "INNER JOIN \"TransactionItems\" AS B ON A.\"transactionId\" = B.\"transactionId\" "
-	    	+ "INNER JOIN \"Product\" AS C ON B.\"productId\" = C.\"productId\" "
-	    	+ "GROUP BY A.\"locationId\", C.\"productCategory\"";
-	    	
-	    	return null;
-		}
-	    
-		public List<AccountDetails> getRevenueByLocation(){
+		public Map<String, Integer> getRevenueByLocation(){
+			Map<String, Integer> revenueByLocation = new HashMap<String, Integer>();
+			
 			String query = "SELECT  \"address\", SUM(\"amount\") AS \"revenue\" "
 			+ "FROM \"TransactionHistory\" AS A "
 			+ "INNER JOIN \"Location\" AS B ON A.\"locationId\" = B.\"locationId\" "
 			+ "GROUP BY \"address\"";
 			
-			return null;
+			ResultSet rst;
+			try {
+				rst = conn.createStatement().executeQuery(query);
+				while (rst.next()) {
+					revenueByLocation.put(rst.getString(1), rst.getInt(2));
+		        	System.out.println(rst.getString(1) + " " + rst.getString(2));
+		        }
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			
+			return revenueByLocation;
 	    }
 	    
 	    public AccountDetails getInventoryLevelsByLocation(String accountNumber){
 	    	return null;
-	    }
-	    
-	    public Map<String, Integer> getMerchantTypeShare() throws ClassNotFoundException, SQLException{
-	    	Map<String, Integer> merchantTypeShare = new HashMap<String, Integer>();
-	    	Connection conn;
-	        Class.forName("org.apache.phoenix.jdbc.PhoenixDriver");
-	        conn =  DriverManager.getConnection("jdbc:phoenix:" + zkHost + ":" + zkPort + ":" + zkHBasePath);
-	        System.out.println("got connection");
-	        ResultSet rst = conn.createStatement().executeQuery("SELECT \"merchantType\", COUNT(\"merchantType\") as \"Count\" FROM \"TransactionHistory\" WHERE \"frauduent\" = 'false' GROUP BY \"merchantType\"");
-	        while (rst.next()) {
-	        	merchantTypeShare.put(rst.getString(1), rst.getInt(2));
-	        	System.out.println(rst.getString(1) + " " + rst.getString(2));
-	        }
-	        
-	        return merchantTypeShare;
 	    }
 	    
 	    public void sendFraudNotification(Transaction transaction){

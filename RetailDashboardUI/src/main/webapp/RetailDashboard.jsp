@@ -242,6 +242,41 @@ div#customer_container{
   			}
   		});
   	}
+	function drawRevenueByCategoryChart() {
+        var data = google.visualization.arrayToDataTable([
+			['Product Category', 'Revenue'],
+			<c:forEach items="${revenueByCategory}" var="category">
+          		['${category.key}',${category.value}],  
+		  	</c:forEach>                                                
+		  ['', 0]
+        ]);
+
+        var options = {
+          title: 'Revenue by Product Category',
+          pieHole: 0.3,
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('chart1'));
+        chart.draw(data, options);
+      }
+	
+	function drawRevenueBySubCategoryChart() {
+        var data = google.visualization.arrayToDataTable([
+			['Product Sub Category', 'Revenue'],
+			<c:forEach items="${revenueBySubCategory}" var="subCategory">
+          		['${subCategory.key}',${subCategory.value}],  
+		  	</c:forEach>                                                
+		  ['', 0]
+        ]);
+
+        var options = {
+          title: 'Revenue by Product Sub Category',
+          pieHole: 0.3,
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('chart2'));
+        chart.draw(data, options);
+      }
       /*
       function drawMap() {
 		var row = 0;        
@@ -535,18 +570,18 @@ div#customer_container{
     		  location.href='CustomerOverview?requestType=sendFraudNotice&accountNumber=' + ${accountDetails.accountNumber} + '&fraudulentTransactionId=' + document.getElementById('selectedTransId').value;  
     	  }
       }
-      
+      */       
       function loadCharts(){
-    	  if(${accountDetails.isAccountActive}==false){
-        	  document.getElementById("account_container").style.backgroundColor = "#FF0000"  
-          }
+    	  //if(${accountDetails.isAccountActive}==false){
+          //	  document.getElementById("account_container").style.backgroundColor = "#FF0000"  
+          // }
     	  google.charts.load('current', {packages: ['corechart', 'bar', 'table', 'map']});
-    	  google.charts.setOnLoadCallback(drawTable);
-    	  google.charts.setOnLoadCallback(drawChart);
-    	  google.charts.setOnLoadCallback(drawMap);
-    	  drawSDChart();
+    	  //google.charts.setOnLoadCallback(drawTable);
+    	  //google.charts.setOnLoadCallback(drawMap);
+    	  google.charts.setOnLoadCallback(drawRevenueByCategoryChart());
+    	  google.charts.setOnLoadCallback(drawRevenueBySubCategoryChart());
       }
-    */  
+
     </script>
 </head>
 <body onload="loadCharts()">
