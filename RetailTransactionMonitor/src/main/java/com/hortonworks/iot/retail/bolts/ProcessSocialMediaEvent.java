@@ -70,8 +70,8 @@ public class ProcessSocialMediaEvent extends BaseRichBolt {
 					event.getEventTimeStamp() + "','" + 
 					event.getStatement() + "','" + 
 					event.getIpAddress() + "','" + 
-					event.getLatitude() + "'," + 
-					event.getLongitude() + "," + 
+					event.getLatitude() + "','" + 
+					event.getLongitude() + "'," + 
 					Integer.valueOf(event.getSentiment()) + ")");
 			conn.commit();
 		} catch (SQLException e) {
