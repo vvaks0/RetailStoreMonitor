@@ -254,7 +254,7 @@ div#customer_container{
 		  revenueSentimentChartData.addRows([['3', 280, 3]]);
 		  revenueSentimentChartOptions = {
 				  chart: {
-			          title: 'Real Time Revenue Growth vs Real Time Brand Sentiment'
+			          //title: 'Real Time Revenue Growth vs Real Time Brand Sentiment'
 			        },
 			        //width: 350,
 			        //height: 150,
@@ -656,7 +656,7 @@ div#customer_container{
 				<div id="details" class="chart_container">
 	
 				</div>
-				<div id="map1" class="map_container"></div>
+				<div id="map1" class="chart_container"></div>
 			</div>
 		</div>
 		<div id="charts" class="section_container">
