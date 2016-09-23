@@ -632,7 +632,7 @@ div#customer_container{
 	<div id="bodyContainer" class="body_container">
 		<div id="top_div" class="section_container">
 			<div class="top_section">
-				<div id="details" class="profile_container">
+				<div id="details" class="chart_container">
 	
 				</div>
 				<div id="map1" class="map_container"></div>
