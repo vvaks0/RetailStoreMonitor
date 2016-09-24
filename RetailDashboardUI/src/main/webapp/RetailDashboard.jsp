@@ -202,6 +202,7 @@ div#customer_container{
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/highcharts-more.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/drilldown.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/dojo/1.7.8/dojo/dojo.js"></script>
 <script type="text/javascript">
   	console.log("Number of transactions in hisotry: " + ${fn:length(transactionHistory)});
