@@ -365,7 +365,7 @@ div#customer_container{
 	            	series: {
 	                	dataLabels: {
 	                		enabled: true,
-	                    	format: '{point.name}: ${point.y:.2f}'
+	                    	format: '{point.name}: {point.y:.2f}'
 	                	}
 	            	}
 	        	},
