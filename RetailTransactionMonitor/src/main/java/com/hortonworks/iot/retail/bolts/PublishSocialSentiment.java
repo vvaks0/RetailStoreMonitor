@@ -9,6 +9,7 @@ import org.cometd.client.transport.LongPollingTransport;
 import org.eclipse.jetty.client.HttpClient;
 
 import com.hortonworks.iot.retail.events.EnrichedTransaction;
+import com.hortonworks.iot.retail.events.SocialMediaEvent;
 import com.hortonworks.iot.retail.util.Constants;
 
 /*
@@ -37,20 +38,18 @@ public class PublishSocialSentiment extends BaseRichBolt {
 	private Constants constants;
 	
 	public void execute(Tuple tuple) {
-		EnrichedTransaction transaction = (EnrichedTransaction) tuple.getValueByField("EnrichedTransaction");
+		SocialMediaEvent socialMediaEvent = (SocialMediaEvent) tuple.getValueByField("SocialMediaEvent");
 		
 		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("transactionId", transaction.getTransactionId());
-		data.put("transactionTimeStamp", transaction.getTransactionTimeStamp());
-		data.put("accountNumber", transaction.getAccountNumber());
-		data.put("accountType", transaction.getAccountType());
-		data.put("latitude", transaction.getLatitude());
-		data.put("longitude", transaction.getLongitude());
-		data.put("amount", Double.valueOf(transaction.getAmount()));
 		
-		//bayuexClient.getChannel(constants.getIncomingTransactionsChannel()).publish(data);
+		data.put("transactionTimeStamp", socialMediaEvent.getEventTimeStamp());
+		data.put("latitude", socialMediaEvent.getLatitude());
+		data.put("longitude", socialMediaEvent.getLongitude());
+		data.put("sentiment", Double.valueOf(socialMediaEvent.getSentiment()));
 		
-		collector.emit(tuple, new Values((EnrichedTransaction)transaction));
+		bayuexClient.getChannel(constants.getSocialMediaChannel()).publish(data);
+		
+		collector.emit(tuple, new Values((SocialMediaEvent)socialMediaEvent));
 		collector.ack(tuple);
 	}
 

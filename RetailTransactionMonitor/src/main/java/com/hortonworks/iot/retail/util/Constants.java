@@ -16,6 +16,7 @@ public class Constants {
 	private String cometdPort = "8091";
 	private String pubSubUrl;
 	private String incomingTransactionsChannel = "/incomingTransactions";
+	private String socialMediaChannel = "/socialMedia";
 	private String fraudAlertChannel = "/fraudAlert";
 	private String accountStatusUpdateChannel = "/accountStatusUpdate";
 	
@@ -195,5 +196,13 @@ public class Constants {
 
 	public void setInventoryUpdatesTopicName(String inventoryUpdatesTopicName) {
 		this.inventoryUpdatesTopicName = inventoryUpdatesTopicName;
+	}
+
+	public String getSocialMediaChannel() {
+		return socialMediaChannel;
+	}
+
+	public void setSocialMediaChannel(String socialMediaChannel) {
+		this.socialMediaChannel = socialMediaChannel;
 	}
 }
