@@ -186,7 +186,7 @@ public class RetailDashboardUI extends HttpServlet{
 					currentProductFamily = rst.getString("productCategory");
 					subCategoryList = new ArrayList<ProductClassification>();
 					System.out.println(currentProductFamily);
-					while(currentProductFamily.equalsIgnoreCase(rst.getString("productCategory"))){
+					while(currentProductFamily.equalsIgnoreCase(rst.getString("productCategory")) && !rst.isClosed()){
 						System.out.println(rst.getString("productSubCategory") + " " + rst.getDouble("revenue"));
 						currentSubCategory = new ProductClassification(rst.getString("productCategory"), 
 																	rst.getString("productSubCategory"),  
@@ -194,8 +194,10 @@ public class RetailDashboardUI extends HttpServlet{
 						subCategoryList.add(currentSubCategory);
 						rst.next();
 					}
-					revenueByCategory.put(currentProductFamily, subCategoryList);
-		        }
+					if(!rst.isClosed()){	
+						revenueByCategory.put(currentProductFamily, subCategoryList);
+					}
+				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
