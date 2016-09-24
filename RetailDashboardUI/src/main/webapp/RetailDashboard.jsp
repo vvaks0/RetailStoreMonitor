@@ -390,20 +390,19 @@ div#customer_container{
 	        	drilldown: {
 	            	series: 
 	            	[
-	            		{
-	            			<c:forEach items="${revenueByCategoryDrillDown}" var="categoryDrillDown">
-	          					{	
-	                				name: '${categoryDrillDown.key}',
-	          						id:	  '${categoryDrillDown.key}',
-	          						data: [
-	          							<c:forEach items="${revenueByCategoryDrillDown.value}" var="categoryDrillDown">
-	    	          						[
-	          									'${categoryDrillDown.productSubCategory}', ${categoryDrillDown.amount}
-	    	          						],
-	    	          					</c:forEach>
-	    	          				]
-	          					},
-	          				</c:forEach>
+	            		<c:forEach items="${revenueByCategoryDrillDown}" var="categoryDrillDown">
+	          				{	
+	                			name: '${categoryDrillDown.key}',
+	          					id:	  '${categoryDrillDown.key}',
+	          					data: [
+	          						<c:forEach items="${revenueByCategoryDrillDown.value}" var="categoryDrillDown">
+	    	          					[
+	          								'${categoryDrillDown.productSubCategory}', ${categoryDrillDown.amount}
+	    	          					],
+	    	       					</c:forEach>
+	    	         			]
+	          				},
+	          			</c:forEach>
 	            		}
 	          		]
 	        	}
