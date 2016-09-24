@@ -354,7 +354,7 @@ div#customer_container{
 	    	});
 		
 	    	// Create the chart
-	    	$('chart1').highcharts({
+	    	$('#chart1').highcharts({
 	        	chart: {
 	            	type: 'pie'
 	        	},
@@ -365,7 +365,7 @@ div#customer_container{
 	            	series: {
 	                	dataLabels: {
 	                		enabled: true,
-	                    	format: '{point.name}: {point.y:.1f}%'
+	                    	format: '{point.name}: ${point.y:.2f}'
 	                	}
 	            	}
 	        	},
