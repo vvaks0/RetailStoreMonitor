@@ -185,11 +185,14 @@ public class RetailDashboardUI extends HttpServlet{
 				while (rst.next()) {
 					currentProductFamily = rst.getString("productCategory");
 					subCategoryList = new ArrayList<ProductClassification>();
+					System.out.println(currentProductFamily);
 					while(currentProductFamily.equalsIgnoreCase(rst.getString("productCategory"))){
+						System.out.println(rst.getString("productSubCategory") + " " + rst.getDouble("revenue"));
 						currentSubCategory = new ProductClassification(rst.getString("productCategory"), 
 																	rst.getString("productSubCategory"),  
 																	rst.getDouble("revenue"));
 						subCategoryList.add(currentSubCategory);
+						rst.next();
 					}
 					revenueByCategory.put(currentProductFamily, subCategoryList);
 		        }
