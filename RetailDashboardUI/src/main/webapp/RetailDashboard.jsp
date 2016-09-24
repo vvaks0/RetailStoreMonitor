@@ -359,7 +359,7 @@ div#customer_container{
 	            	type: 'pie'
 	        	},
 	        	title: {
-	            	text: 'Revenue By Product Category'
+	            	text: 'Revenue By Product Category',
 	            	style: {
 	                   fontSize: '11'
 	               	}
@@ -444,7 +444,7 @@ div#customer_container{
 		</div>
 		<div id="charts" class="section_container">
 			<div class="charts_section" class="section_container">
-				<div id="chart1" class="chart_container"></div>
+				<div id="chart1" class="map_container"></div>
 				<div id="chart2" class="chart_container"></div>
 			</div>
 		</div>
