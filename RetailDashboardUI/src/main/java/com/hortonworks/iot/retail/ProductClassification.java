@@ -29,11 +29,11 @@ public class ProductClassification {
 		this.productSubCategory = productSubCategory;
 	}
 
-	public Double getPrice() {
+	public Double getAmount() {
 		return amount;
 	}
 
-	public void setPrice(Double amount) {
+	public void setAmount(Double amount) {
 		this.amount = amount;
 	}
 }
