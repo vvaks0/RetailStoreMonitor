@@ -217,12 +217,13 @@ div#customer_container{
   	var pubSubUrl = "http://" + cometdHost + ":" + cometdPort + "/cometd";
   	var alertChannel = "/fraudAlert";
     var incomingTransactionsChannel = "/incomingTransactions";
-  	var sentimentChannel = "/sentiment";
+  	var socialMediaChannel = "/socialMedia";
 	var preview = {};
 	var markers = {};
 	var map;
 	var revenueSentimentChart;
 	var revenueSentimentChartData;
+	var revenueSentimentChartChartOptions;
 	var currentRevenue;
 	var currentSentiment;
 	
@@ -233,11 +234,18 @@ div#customer_container{
 				if(message.channel == incomingTransactionsChannel){
 					console.log(message);
 					
-					currentTimeStamp = message.data.timeStamp;
+					currentTimeStamp = message.data.transactionTimeStamp;
 					currentRevenue = currentRevenue + message.data.amount;
+					
+					revenueSentimentChartData.addRows([[currentTimeStamp, currentRevenue, currentSentiment]]);
+					revenueSentimentChart.draw(revenueSentimentChartData, revenueSentimentChartChartOptions);
+				}else if(message.channel == socialMediaChannel){
+					console.log(message);
+					
+					currentTimeStamp = message.data.transactionTimeStamp;
 					currentSentiment = currentSentiment + message.data.sentiment;
 					
-					revenueSentimentChartData.addRows([[currentTimeStam, currentRevenue, currentSentiment]]);
+					revenueSentimentChartData.addRows([[currentTimeStamp, currentRevenue, currentSentiment]]);
 					revenueSentimentChart.draw(revenueSentimentChartData, revenueSentimentChartChartOptions);
 				}else if(message.channel == alertChannel){
 					console.log(message);
