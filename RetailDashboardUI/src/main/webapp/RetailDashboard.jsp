@@ -436,44 +436,19 @@ div#customer_container{
 	<div id="bodyContainer" class="body_container">
 		<div id="top_div" class="section_container">
 			<div class="top_section">
-				<div id="details" class="chart_container">
-	
-				</div>
+				<div id="details" class="map_container"></div>
 				<div id="map1" class="map_container"></div>
 			</div>
 		</div>
 		<div id="charts" class="section_container">
 			<div class="charts_section" class="section_container">
 				<div id="chart1" class="map_container"></div>
-				<div id="chart2" class="chart_container"></div>
+				<div id="chart2" class="map_container"></div>
 			</div>
 		</div>
-	<%-- <div id="transactionList" class="transaction_list">
-			<div class="transaction_listing">
-				<div id="" class="table_header_container">Transaction Id</div>
-				<div id="" class="table_header_container">Merchant Type</div>
-				<div id="" class="table_header_container">Amount</div>
-				<div id="" class="table_header_container">Date</div> 
-			</div>
-			<c:forEach items="${transactionHistory}" var="transaction">
-				<div id="${transaction.transactionId}" class="transaction_listing">
-					<div id="" class="table_cell_container">
-						<a href="CustomerOverview?requestType=sendFraudNotice&accountNumber=${transaction.accountNumber}&fraudulentTransactionId=${transaction.transactionId}">${transaction.transactionId}</a>
-					</div>
-					<div id="" class="table_cell_container">
-						${transaction.merchantType}
-					</div>
-					<div id="" class="table_cell_container">
-						${transaction.amount}
-					</div>
-					<div id="" class="table_cell_container">
-						${transaction.transactionTimeStamp}
-					</div>
-				</div>
-          	</c:forEach>
-		</div> --%>	
-		<div id="legitTransaction_table" class="table_container"></div>
-		<div id="fraudTransaction_table" class="table_container"></div>
+		
+		<!-- <div id="legitTransaction_table" class="table_container"></div>
+		<div id="fraudTransaction_table" class="table_container"></div> -->
 	</div>
 </body>
 </html>
