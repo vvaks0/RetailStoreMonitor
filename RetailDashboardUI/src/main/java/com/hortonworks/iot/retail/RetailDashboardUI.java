@@ -169,7 +169,7 @@ public class RetailDashboardUI extends HttpServlet{
 	    public Map<String, List<ProductClassification>> getRevenueByCategoryDrillDown(String transactionId) {
 	    	Map<String, List<ProductClassification>> revenueByCategory = new HashMap<String, List<ProductClassification>>();
 	    	
-	    	String query = "SELECT C.\"productCategory\", C.\"productSubCategory\", "
+	    	String query = "SELECT \"productCategory\", \"productSubCategory\", "
 	    	    	+ "SUM(C.\"price\") AS \"revenue\" "
 	    	    	+ "FROM \"TransactionHistory\" AS A "
 	    	    	+ "INNER JOIN \"TransactionItems\" AS B ON A.\"transactionId\" = B.\"transactionId\" "
