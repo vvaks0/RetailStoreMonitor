@@ -169,8 +169,8 @@ public class RetailDashboardUI extends HttpServlet{
 	    public Map<String, List<ProductClassification>> getRevenueByCategoryDrillDown(String transactionId) {
 	    	Map<String, List<ProductClassification>> revenueByCategory = new HashMap<String, List<ProductClassification>>();
 	    	
-	    	String query = "SELECT C.\"productSubCategory\", C.\"productSubCategory\", "
-	    	    	+ "SUM(C.\"price\") as revenue "
+	    	String query = "SELECT C.\"productCategory\", C.\"productSubCategory\", "
+	    	    	+ "SUM(C.\"price\") AS \"revenue\" "
 	    	    	+ "FROM \"TransactionHistory\" AS A "
 	    	    	+ "INNER JOIN \"TransactionItems\" AS B ON A.\"transactionId\" = B.\"transactionId\" "
 	    	    	+ "INNER JOIN \"Product\" AS C ON B.\"productId\" = C.\"productId\" "
@@ -188,7 +188,7 @@ public class RetailDashboardUI extends HttpServlet{
 					while(currentProductFamily.equalsIgnoreCase(rst.getString("productCategory"))){
 						currentSubCategory = new ProductClassification(rst.getString("productCategory"), 
 																	rst.getString("productSubCategory"),  
-																	rst.getDouble("price"));
+																	rst.getDouble("revenue"));
 						subCategoryList.add(currentSubCategory);
 					}
 					revenueByCategory.put(currentProductFamily, subCategoryList);
