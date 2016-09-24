@@ -334,7 +334,82 @@ div#customer_container{
 
 	      var chart = new google.visualization.GeoChart(document.getElementById('map1'));
 	      chart.draw(data, options);
-	    };
+	    }
+	    
+	    function drawRevenueByCategoryChart(){
+	    	$(function () {
+				Highcharts.getOptions().colors = Highcharts.map(Highcharts.getOptions().colors, 			
+				function (color) {
+	        		return {
+	            	radialGradient: {
+	                	cx: 0.5,
+	                	cy: 0.3,
+	                	r: 0.7
+	            	},
+	            	stops: [
+	                	[0, color],
+	                	[1, Highcharts.Color(color).brighten(-0.3).get('rgb')] // darken
+	            	]
+	        	};
+	    	});
+		
+	    	// Create the chart
+	    	$('#container').highcharts({
+	        	chart: {
+	            	type: 'pie'
+	        	},
+	        	title: {
+	            	text: 'Revenue By Product Category'
+	        	},
+	        	plotOptions: {
+	            	series: {
+	                	dataLabels: {
+	                		enabled: true,
+	                    	format: '{point.name}: {point.y:.1f}%'
+	                	}
+	            	}
+	        	},
+
+	        	tooltip: {
+	            	headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+	            	pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}%</b> of total<br/>'
+	        	},
+	        	series: [{
+	            	name: 'Product Category',
+	            	colorByPoint: true,
+	            	data: [
+	                	<c:forEach items="${revenueByCategory}" var="category">
+	          				{	
+	                			name: '${category.key}',
+	          					y:	  ${category.value},  
+	          					drilldown: '${category.key}'
+	          				},
+	          			</c:forEach> 
+	            	]
+	        	}],
+	        	drilldown: {
+	            	series: 
+	            	[
+	            		{
+	            			<c:forEach items="${revenueByCategoryDrillDown}" var="categoryDrillDown">
+	          					{	
+	                				name: '${categoryDrillDown.key}',
+	          						id:	  '${categoryDrillDown.key}',
+	          						data: [
+	          							<c:forEach items="${revenueByCategoryDrillDown.value}" var="categoryDrillDown">
+	    	          						[
+	          									'${categoryDrillDown.productSubCategory}', ${categoryDrillDown.amount}
+	    	          						],
+	    	          					</c:forEach>
+	    	          				]
+	          					},
+	          				</c:forEach>
+	            		}
+	          		]
+	        	}
+	    	});
+		}); 
+	  	}  
       /*
       function drawMap() {
 		var row = 0;        

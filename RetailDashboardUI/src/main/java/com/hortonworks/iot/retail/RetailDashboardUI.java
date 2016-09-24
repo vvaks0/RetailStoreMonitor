@@ -59,7 +59,7 @@ public class RetailDashboardUI extends HttpServlet{
 	    
 	    @SuppressWarnings("deprecation")
 		public void init(ServletConfig config) throws ServletException {
-	    	Configuration hbaseConfig = HBaseConfiguration.create();
+	    	//Configuration hbaseConfig = HBaseConfiguration.create();
 	    	
 	    	super.init(config);
 	        System.out.println("Calling Init method and setting request to Initial");
@@ -105,9 +105,9 @@ public class RetailDashboardUI extends HttpServlet{
 	        System.out.println("********************** Http Uri: " + httpListenUri);
 	        System.out.println("********************** Map Api Key: " + mapAPIKey);
 	        
-	    	hbaseConfig.set("hbase.zookeeper.quorum", zkHost);
-			hbaseConfig.set("hbase.zookeeper.property.clientPort", zkPort);
-			hbaseConfig.set("zookeeper.znode.parent", zkHBasePath);
+	    	//hbaseConfig.set("hbase.zookeeper.quorum", zkHost);
+			//hbaseConfig.set("hbase.zookeeper.property.clientPort", zkPort);
+			//hbaseConfig.set("zookeeper.znode.parent", zkHBasePath);
 			
 	    	try {
 				Class.forName("org.apache.phoenix.jdbc.PhoenixDriver");
@@ -121,11 +121,7 @@ public class RetailDashboardUI extends HttpServlet{
 	    }
 	    public void doTask(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	    	String accountNumber;
-	    	AccountDetails accountDetails = null;
 	    	String fraudulentTransactionId = null;
-	    	Transaction fraudulentTransaction = null;
-	    	List<AccountDetails> accountDetailsList = null;
-	    	List<Transaction> transactionHistory = null;
 	    	Map<String, Integer> merchantTypeShare = null;
 	        
 	    	response.setContentType(CONTENT_TYPE);
@@ -177,6 +173,40 @@ public class RetailDashboardUI extends HttpServlet{
 	    	return revenueBySubCategory;
 		}
 	    
+	    public Map<String, List<ProductClassification>> getRevenueByCategoryDrilldown(String transactionId) {
+	    	Map<String, List<ProductClassification>> revenueByCategory = new HashMap<String, List<ProductClassification>>();
+	    	
+	    	String query = "SELECT C.\"productSubCategory\", C.\"productSubCategory\", "
+	    	    	+ "SUM(C.\"price\") as revenue "
+	    	    	+ "FROM \"TransactionHistory\" AS A "
+	    	    	+ "INNER JOIN \"TransactionItems\" AS B ON A.\"transactionId\" = B.\"transactionId\" "
+	    	    	+ "INNER JOIN \"Product\" AS C ON B.\"productId\" = C.\"productId\" "
+	    	    	+ "GROUP BY C.\"productSubCategory\", C.\"productSubCategory\"";
+	    	
+	    	ResultSet rst;
+			try {
+				rst = conn.createStatement().executeQuery(query);
+				String currentProductFamily;
+				ProductClassification currentSubCategory;
+				List<ProductClassification> subCategoryList;
+				while (rst.next()) {
+					currentProductFamily = rst.getString("productCategory");
+					subCategoryList = new ArrayList<ProductClassification>();
+					while(currentProductFamily.equalsIgnoreCase(rst.getString("productCategory"))){
+						currentSubCategory = new ProductClassification(rst.getString("productCategory"), 
+																	rst.getString("productSubCategory"),  
+																	rst.getDouble("price"));
+						subCategoryList.add(currentSubCategory);
+					}
+					revenueByCategory.put(currentProductFamily, subCategoryList);
+		        }
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+	    	
+	    	return revenueByCategory;
+		}
+	    
 	    public Map<String, Integer> getRevenueByCategory(String transactionId) {
 	    	Map<String, Integer> revenueByCategory = new HashMap<String, Integer>();
 	    	
@@ -221,35 +251,6 @@ public class RetailDashboardUI extends HttpServlet{
 			}
 			
 			return revenueByLocation;
-	    }
-	    
-	    public AccountDetails getInventoryLevelsByLocation(String accountNumber){
-	    	return null;
-	    }
-	    
-	    public void sendFraudNotification(Transaction transaction){
-	        System.out.println("Sending Customer Notification Information ************************");
-	        transaction.setSource("analyst_action");
-	        transaction.setFraudulent("true");
-	        try{
-	        	URL url = new URL("http://" + httpHost + ":" + httpListenPort + httpListenUri);
-	    		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-	    		conn.setDoOutput(true);
-	    		conn.setRequestMethod("POST");
-	    		conn.setRequestProperty("Content-Type", "application/json");
-	            String payload = "{\"to\": \"/topics/fraudAlert\",\"data\": " + convertPOJOToJSON(transaction) + "}"; 
-	    		System.out.println("To String: " + payload);
-	            
-	            OutputStream os = conn.getOutputStream();
-	    		os.write(payload.getBytes());
-	    		os.flush();
-	            
-	            if (conn.getResponseCode() != 200)
-	    			throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
-	    		
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
 	    }
 	    
 	    public void testPubSub() {
