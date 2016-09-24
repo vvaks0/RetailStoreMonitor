@@ -182,7 +182,7 @@ public class RetailDashboardUI extends HttpServlet{
 				String currentProductFamily;
 				ProductClassification currentSubCategory;
 				List<ProductClassification> subCategoryList;
-				rst.first();
+				rst.next();
 				while (!rst.isClosed()) {
 					currentProductFamily = rst.getString("productCategory");
 					subCategoryList = new ArrayList<ProductClassification>();
