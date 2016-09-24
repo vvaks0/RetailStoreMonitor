@@ -43,8 +43,6 @@ public class RetailDashboardUI extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 		private static final String CONTENT_TYPE = "text/html; charset=windows-1252";
 	    private String requestType;
-	    private HTable customerAccountTable = null;
-	    private HTable transactionHistoryTable = null;
 	    private Connection conn;
 	    private String zkHost = "sandbox.hortonworks.com";
 	    private String zkPort = "2181";
@@ -54,10 +52,8 @@ public class RetailDashboardUI extends HttpServlet{
 	    private String httpListenUri = "/contentListener";
 	    private String cometdHost = "sandbox.hortonworks.com";
 	    private String cometdListenPort = "8091";
-		private String defaultAccountNumber = "19123";
 		private String mapAPIKey = "NO_API_KEY_FOUND";
 	    
-	    @SuppressWarnings("deprecation")
 		public void init(ServletConfig config) throws ServletException {
 	    	//Configuration hbaseConfig = HBaseConfiguration.create();
 	    	
@@ -119,11 +115,7 @@ public class RetailDashboardUI extends HttpServlet{
 				e.printStackTrace();
 			}
 	    }
-	    public void doTask(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	    	String accountNumber;
-	    	String fraudulentTransactionId = null;
-	    	Map<String, Integer> merchantTypeShare = null;
-	        
+	    public void doTask(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	        
 	    	response.setContentType(CONTENT_TYPE);
 	        System.out.println("First Check of Request Type: " + requestType);
 	        
@@ -146,6 +138,7 @@ public class RetailDashboardUI extends HttpServlet{
 	        	request.setAttribute("mapAPIKey", mapAPIKey);
 	        	request.setAttribute("revenueByCategory", getRevenueByCategory(""));
 	        	request.setAttribute("revenueBySubCategory", getRevenueBySubCategory(""));
+	        	request.setAttribute("revenueByCategoryDrillDown", getRevenueByCategoryDrillDown(""));
 	        	request.getRequestDispatcher("RetailDashboard.jsp").forward(request, response);
 	        } 
 	    }
@@ -173,7 +166,7 @@ public class RetailDashboardUI extends HttpServlet{
 	    	return revenueBySubCategory;
 		}
 	    
-	    public Map<String, List<ProductClassification>> getRevenueByCategoryDrilldown(String transactionId) {
+	    public Map<String, List<ProductClassification>> getRevenueByCategoryDrillDown(String transactionId) {
 	    	Map<String, List<ProductClassification>> revenueByCategory = new HashMap<String, List<ProductClassification>>();
 	    	
 	    	String query = "SELECT C.\"productSubCategory\", C.\"productSubCategory\", "
