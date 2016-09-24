@@ -112,7 +112,7 @@ div#customer_container{
 
 .charts_section {
 	width: 100%;
-	height: 210px;
+	height: 300px;
 	float: left;
 	overflow: hidden;
 }
