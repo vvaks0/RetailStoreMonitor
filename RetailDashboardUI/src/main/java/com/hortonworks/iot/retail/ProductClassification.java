@@ -7,10 +7,10 @@ public class ProductClassification {
 	
 	public ProductClassification(){}
 	
-	public ProductClassification(String productCategory, String productSubCategory, Double price){
+	public ProductClassification(String productCategory, String productSubCategory, Double amount){
 		this.productCategory = productCategory;
 		this.productSubCategory = productSubCategory;
-		this.amount = price;
+		this.amount = amount;
 	}
 
 	public String getProductCategory() {

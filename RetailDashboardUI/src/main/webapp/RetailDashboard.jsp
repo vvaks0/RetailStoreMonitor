@@ -395,7 +395,7 @@ div#customer_container{
 	                			name: '${categoryDrillDown.key}',
 	          					id:	  '${categoryDrillDown.key}',
 	          					data: [
-	          						<c:forEach items="${revenueByCategoryDrillDown.value}" var="categoryDrillDown">
+	          						<c:forEach items="${categoryDrillDown.value}" var="categoryDrillDown">
 	    	          					[
 	          								'${categoryDrillDown.productSubCategory}', ${categoryDrillDown.amount}
 	    	          					],
