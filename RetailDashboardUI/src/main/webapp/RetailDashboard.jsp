@@ -403,7 +403,6 @@ div#customer_container{
 	    	         			]
 	          				},
 	          			</c:forEach>
-	            		}
 	          		]
 	        	}
 	    	});
