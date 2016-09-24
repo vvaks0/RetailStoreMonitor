@@ -174,7 +174,7 @@ public class RetailDashboardUI extends HttpServlet{
 	    	    	+ "FROM \"TransactionHistory\" AS A "
 	    	    	+ "INNER JOIN \"TransactionItems\" AS B ON A.\"transactionId\" = B.\"transactionId\" "
 	    	    	+ "INNER JOIN \"Product\" AS C ON B.\"productId\" = C.\"productId\" "
-	    	    	+ "GROUP BY C.\"productSubCategory\", C.\"productSubCategory\"";
+	    	    	+ "GROUP BY C.\"productCategory\", C.\"productSubCategory\"";
 	    	
 	    	ResultSet rst;
 			try {
