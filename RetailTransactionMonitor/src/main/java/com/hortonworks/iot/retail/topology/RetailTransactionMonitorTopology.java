@@ -128,7 +128,7 @@ public class RetailTransactionMonitorTopology {
 	      
 	      builder.setSpout("InventoryUpdatesKafkaSpout", inventoryUpdatesKafkaSpout);
 	      builder.setBolt("EnrichInventoryUpdate", new EnrichInventoryUpdate(), 1).shuffleGrouping("InventoryUpdatesKafkaSpout");
-	      builder.setBolt("PublishInventoryUpdate", new PublishInventoryUpdate(), 1).shuffleGrouping("EnrichInventoryUpdate", "InventoryStream");
+	      //builder.setBolt("PublishInventoryUpdate", new PublishInventoryUpdate(), 1).shuffleGrouping("EnrichInventoryUpdate", "InventoryStream");
 	      //builder.setBolt("MergeStreams", new MergeStreams().withWindow(new Count(12), new Count(6)), 1).shuffleGrouping("EnrichTransaction", "TransactionStream");//.shuffleGrouping("EnrichInventoryUpdate", "InventoryStream");
 	      
 	      builder.setSpout("SocialMediaKafkaSpout", socialMediaKafkaSpout);

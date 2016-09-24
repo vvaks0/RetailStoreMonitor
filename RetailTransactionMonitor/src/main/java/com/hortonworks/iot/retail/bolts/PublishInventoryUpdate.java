@@ -36,6 +36,7 @@ public class PublishInventoryUpdate extends BaseRichBolt {
 	
 	public void execute(Tuple tuple) {
 		@SuppressWarnings("unchecked")
+		
 		Map<String,Product> lostInventory = (Map<String,Product>) tuple.getValueByField("EnrichedInventoryUpdate");
 		
 		Map<String, Object> data = new HashMap<String, Object>();
