@@ -49,7 +49,7 @@ public class PublishSocialSentiment extends BaseRichBolt {
 		
 		bayuexClient.getChannel(constants.getSocialMediaChannel()).publish(data);
 		
-		collector.emit(tuple, new Values((SocialMediaEvent)socialMediaEvent));
+		//collector.emit(tuple, new Values((SocialMediaEvent)socialMediaEvent));
 		collector.ack(tuple);
 	}
 

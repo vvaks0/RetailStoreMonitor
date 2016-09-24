@@ -50,7 +50,7 @@ public class PublishTransaction extends BaseRichBolt {
 		
 		bayuexClient.getChannel(constants.getIncomingTransactionsChannel()).publish(data);
 		
-		collector.emit(tuple, new Values((EnrichedTransaction)transaction));
+		//collector.emit(tuple, new Values((EnrichedTransaction)transaction));
 		collector.ack(tuple);
 	}
 
