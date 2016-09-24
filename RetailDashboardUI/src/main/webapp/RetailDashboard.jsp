@@ -360,6 +360,9 @@ div#customer_container{
 	        	},
 	        	title: {
 	            	text: 'Revenue By Product Category'
+	            	style: {
+	                   fontSize: '11'
+	               	}
 	        	},
 	        	plotOptions: {
 	            	series: {
@@ -372,7 +375,7 @@ div#customer_container{
 
 	        	tooltip: {
 	            	headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-	            	pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}%</b> of total<br/>'
+	            	pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}</b> of total<br/>'
 	        	},
 	        	series: [{
 	            	name: 'Product Category',
