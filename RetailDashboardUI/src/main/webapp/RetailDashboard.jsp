@@ -224,8 +224,8 @@ div#customer_container{
 	var revenueSentimentChart;
 	var revenueSentimentChartData;
 	var revenueSentimentChartChartOptions;
-	var currentRevenue;
-	var currentSentiment;
+	var currentRevenue = 0;
+	var currentSentiment = 0;
 	
 	dojo.ready(connectDeviceTopic)
 	function connectDeviceTopic(){
