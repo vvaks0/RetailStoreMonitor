@@ -121,7 +121,7 @@ public class EnrichInventoryUpdate extends BaseRichBolt {
 			
 			//persistTransactionToHbase(enrichedInventoryUpdate);
 			System.out.println("********************** EnrichInventory execute() emitting Tuple");
-			collector.emit(tuple, new Values((EnrichedInventoryUpdate)enrichedInventoryUpdate));
+			collector.emit("InventoryStream",tuple, new Values((EnrichedInventoryUpdate)enrichedInventoryUpdate));
 			collector.ack(tuple);
 		}
 		else{
