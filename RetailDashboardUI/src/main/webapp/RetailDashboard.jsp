@@ -353,8 +353,6 @@ div#customer_container{
 		 regionMap.set('IL', 2);
 		 regionMap.set('CA', 3);
 		 regionMap.set('TX', 4);
-
-		 data.setValue(myMap.get('NY'),1,200); 
 		 
 		 sentimentByRegionChartData = google.visualization.arrayToDataTable([
 	        ['City', 'Sentiment'],
