@@ -43,6 +43,7 @@ public class PublishSocialSentiment extends BaseRichBolt {
 		Map<String, Object> data = new HashMap<String, Object>();
 		
 		data.put("transactionTimeStamp", socialMediaEvent.getEventTimeStamp());
+		data.put("region", socialMediaEvent.getRegion());
 		data.put("latitude", socialMediaEvent.getLatitude());
 		data.put("longitude", socialMediaEvent.getLongitude());
 		data.put("sentiment", Double.valueOf(socialMediaEvent.getSentiment()));

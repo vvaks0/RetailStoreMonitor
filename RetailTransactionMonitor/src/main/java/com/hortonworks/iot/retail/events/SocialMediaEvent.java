@@ -4,6 +4,7 @@ public class SocialMediaEvent {
 		private String eventTimeStamp;
 		private String statement;
 		private String ipAddress;
+		private String region;
 		private String latitude;
 		private String longitude;
 		private String sentiment;
@@ -43,5 +44,11 @@ public class SocialMediaEvent {
 		}
 		public void setSentiment(String sentiment) {
 			this.sentiment = sentiment;
+		}
+		public String getRegion() {
+			return region;
+		}
+		public void setRegion(String region) {
+			this.region = region;
 		}
 }

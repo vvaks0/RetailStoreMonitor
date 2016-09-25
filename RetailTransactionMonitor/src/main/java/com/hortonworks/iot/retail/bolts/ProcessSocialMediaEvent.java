@@ -70,6 +70,7 @@ public class ProcessSocialMediaEvent extends BaseRichBolt {
 					event.getEventTimeStamp() + "','" + 
 					event.getStatement() + "','" + 
 					event.getIpAddress() + "','" + 
+					event.getRegion() + "','" + 
 					event.getLatitude() + "','" + 
 					event.getLongitude() + "'," + 
 					Integer.valueOf(event.getSentiment()) + ")");

@@ -239,6 +239,7 @@ public class EnrichTransaction extends BaseRichBolt {
 					+ "(\"eventTimeStamp\" VARCHAR PRIMARY KEY, "
 					+ "\"statement\" VARCHAR, "
 					+ "\"ipAddress\" VARCHAR, "
+					+ "\"region\" VARCHAR, "
 					+ "\"latitude\" VARCHAR, "
 					+ "\"longitude\" VARCHAR, "
 					+ "\"sentiment\" INTEGER) ");

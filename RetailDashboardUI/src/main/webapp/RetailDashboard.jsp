@@ -221,9 +221,13 @@ div#customer_container{
 	var preview = {};
 	var markers = {};
 	var map;
+	var regionMap;
 	var revenueSentimentChart;
 	var revenueSentimentChartData;
 	var revenueSentimentChartOptions;
+	var sentimentByRegionChart;
+	var sentimentByRegionChartData;
+	var sentimentByRegionChartOptions;
 	var currentRevenue = 0;
 	var currentSentiment = 0;
 	
@@ -242,11 +246,25 @@ div#customer_container{
 				}else if(message.channel == socialMediaChannel){
 					console.log(message);
 					
+					var sentimentAdjustment;
+					if(message.data.sentiment == 0)
+						sentimentAdjustment = -1;
+					else
+						sentimentAdjustment = message.data.sentiment;
+					
 					currentTimeStamp = message.data.transactionTimeStamp;
-					currentSentiment = currentSentiment + message.data.sentiment;
+					currentSentiment = currentSentiment + sentimentAdjustment;
 					
 					revenueSentimentChartData.addRows([[currentTimeStamp, currentRevenue, currentSentiment]]);
 					revenueSentimentChart.draw(revenueSentimentChartData, revenueSentimentChartOptions);
+					
+					var regionIndex = regionMap.get(message.data.region);
+					console.log("sentimentByRegionChartData.getValue(regionIndex,1): " + sentimentByRegionChartData.getValue(regionIndex,1));
+					var currentRegionSentiment = sentimentByRegionChartData.getValue(regionIndex,1);
+					var adjustedRegionSentiment = currentRegionSentiment + sentimentAdjustment;
+					
+					sentimentByRegionChartData.setValue(regionIndex,1,adjustedRegionSentiment);
+					//sentimentByRegionChart.draw(sentimentByRegionData, sentimentByRegionOptions);
 				}else if(message.channel == alertChannel){
 					console.log(message);
 				}else{
@@ -328,24 +346,34 @@ div#customer_container{
         chart.draw(data, options);
       }
 	
-	 function drawGeoChart() {
-	      var data = google.visualization.arrayToDataTable([
-	        ['City',   'Population'],
-	        ['NY',    8614],
-	        ['PA',   10011],
-	        ['NC',    7574],
-	        ['MA',    6574]
+	 function drawSentimentByRegionGeoChart() {
+		 regionMap = new Map();
+		 regionMap.set('NY', 0);
+		 regionMap.set('PA', 1);
+		 regionMap.set('IL', 2);
+		 regionMap.set('CA', 3);
+		 regionMap.set('TX', 4);
+
+		 data.setValue(myMap.get('NY'),1,200); 
+		 
+		 sentimentByRegionChartData = google.visualization.arrayToDataTable([
+	        ['City', 'Sentiment'],
+	        ['NY',   0],
+	        ['PA',   0],
+	        ['IL',   0],
+	        ['CA',   0],
+	        ['TX',   0]
 	      ]);
 
-	      var options = {
+	      sentimentByRegionChartOptions = {
 	        region: 'US',
 	        displayMode: 'regions',
 	        colorAxis: {minValue: 0, colors: ['red','orange','yellow','green']},
 	        resolution: 'provinces'
 	      };
 
-	      var chart = new google.visualization.GeoChart(document.getElementById('map1'));
-	      chart.draw(data, options);
+	      sentimentByRegionChart = new google.visualization.GeoChart(document.getElementById('map1'));
+	      sentimentByRegionChart.draw(sentimentByRegionData, sentimentByRegionOptions);
 	    }
 	    
 	    function drawRevenueByCategoryChart(){
