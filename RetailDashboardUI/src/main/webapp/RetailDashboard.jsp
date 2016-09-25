@@ -371,7 +371,7 @@ div#customer_container{
 	      };
 
 	      sentimentByRegionChart = new google.visualization.GeoChart(document.getElementById('map1'));
-	      sentimentByRegionChart.draw(sentimentByRegionData, sentimentByRegionOptions);
+	      sentimentByRegionChart.draw(sentimentByRegionChartData, sentimentByRegionChartOptions);
 	    }
 	    
 	    function drawRevenueByCategoryChart(){
