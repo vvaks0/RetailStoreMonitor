@@ -264,7 +264,7 @@ div#customer_container{
 					var adjustedRegionSentiment = currentRegionSentiment + sentimentAdjustment;
 					
 					sentimentByRegionChartData.setValue(regionIndex,1,adjustedRegionSentiment);
-					//sentimentByRegionChart.draw(sentimentByRegionData, sentimentByRegionOptions);
+					sentimentByRegionChart.draw(sentimentByRegionChartData, sentimentByRegionChartOptions);
 				}else if(message.channel == alertChannel){
 					console.log(message);
 				}else{
