@@ -223,7 +223,7 @@ div#customer_container{
 	var map;
 	var revenueSentimentChart;
 	var revenueSentimentChartData;
-	var revenueSentimentChartChartOptions;
+	var revenueSentimentChartOptions;
 	var currentRevenue = 0;
 	var currentSentiment = 0;
 	
@@ -246,7 +246,7 @@ div#customer_container{
 					currentSentiment = currentSentiment + message.data.sentiment;
 					
 					revenueSentimentChartData.addRows([[currentTimeStamp, currentRevenue, currentSentiment]]);
-					revenueSentimentChart.draw(revenueSentimentChartData, revenueSentimentChartChartOptions);
+					revenueSentimentChart.draw(revenueSentimentChartData, revenueSentimentChartOptions);
 				}else if(message.channel == alertChannel){
 					console.log(message);
 				}else{
