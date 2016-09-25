@@ -457,7 +457,7 @@ div#customer_container{
     	  google.charts.setOnLoadCallback(drawRevenueVsSentiment);
     	  //google.charts.setOnLoadCallback(drawRevenueByCategoryChart);
     	  google.charts.setOnLoadCallback(drawRevenueBySubCategoryChart);
-    	  google.charts.setOnLoadCallback(drawGeoChart);
+    	  google.charts.setOnLoadCallback(drawSentimentByRegionGeoChart);
     	  drawRevenueByCategoryChart();
       }
 
