@@ -265,6 +265,9 @@ div#customer_container{
 		  revenueSentimentChartData.addRows([['1', 200, 1]]);
 		  revenueSentimentChartData.addRows([['2', 230, 2]]);
 		  revenueSentimentChartData.addRows([['3', 280, 3]]);
+		  
+		  console.log(revenueSentimentChartData.toJSON())
+		  
 		  revenueSentimentChartOptions = {
 				  chart: {
 			          //title: 'Real Time Revenue Growth vs Real Time Brand Sentiment'
