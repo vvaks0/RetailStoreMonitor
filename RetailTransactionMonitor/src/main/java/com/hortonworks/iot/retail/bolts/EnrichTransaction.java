@@ -149,7 +149,8 @@ public class EnrichTransaction extends BaseRichBolt {
 					transaction.getAmount() + ",'" + 
 					transaction.getCurrency() + "','" + 
 					transaction.getIsCardPresent() + "'," + 
-					transaction.getTransactionTimeStamp() + ")");
+					transaction.getTransactionTimeStamp() + ",'" + 
+					transaction.getShipToState() + "')");
 			conn.commit();
 			
 			List<Product> products = transaction.getProducts();
@@ -206,7 +207,8 @@ public class EnrichTransaction extends BaseRichBolt {
 						+ "\"amount\" DOUBLE, "
 						+ "\"currency\" VARCHAR, "
 						+ "\"isCardPresent\" VARCHAR, "
-						+ "\"transactionTimeStamp\" BIGINT) ");
+						+ "\"transactionTimeStamp\" BIGINT, "
+						+ "\"shipToState\" VARCHAR ) ");
 			conn.commit();
 
 			conn.createStatement().executeUpdate("create table if not exists \"TransactionItems\" "

@@ -17,6 +17,7 @@ public class IncomingTransaction {
 	private String isCardPresent;
 	private String ipAddress;
 	private String transactionTimeStamp;
+	private String shipToState;
 	
 	public String getAccountNumber(){
 		return accountNumber;
@@ -78,5 +79,11 @@ public class IncomingTransaction {
 	}
 	public void setItems(List<String> items) {
 		this.items = items;
+	}
+	public String getShipToState() {
+		return shipToState;
+	}
+	public void setShipToState(String shipToState) {
+		this.shipToState = shipToState;
 	}
 }

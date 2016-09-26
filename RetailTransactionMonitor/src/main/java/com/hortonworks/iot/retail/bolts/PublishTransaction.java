@@ -46,6 +46,7 @@ public class PublishTransaction extends BaseRichBolt {
 		data.put("accountType", transaction.getAccountType());
 		data.put("latitude", transaction.getLatitude());
 		data.put("longitude", transaction.getLongitude());
+		data.put("longitude", transaction.getShipToState());
 		data.put("amount", Double.valueOf(transaction.getAmount()));
 		
 		bayuexClient.getChannel(constants.getIncomingTransactionsChannel()).publish(data);
