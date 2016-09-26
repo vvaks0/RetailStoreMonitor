@@ -74,6 +74,7 @@ public class EnrichTransaction extends BaseRichBolt {
 		enrichedTransaction.setTransactionId(incomingTransaction.getTransactionId());
 		enrichedTransaction.setTransactionTimeStamp(incomingTransaction.getTransactionTimeStamp());
 		enrichedTransaction.setIpAddress(incomingTransaction.getIpAddress());
+		enrichedTransaction.setIpAddress(incomingTransaction.getShipToState());
 		
 		System.out.println("********************** Enriching event: " + transactionKey);	    
 	    Result result = null;
