@@ -139,6 +139,7 @@ public class RetailDashboardUI extends HttpServlet{
 	        	request.setAttribute("revenueByCategory", getRevenueByCategory(""));
 	        	request.setAttribute("revenueBySubCategory", getRevenueBySubCategory(""));
 	        	request.setAttribute("revenueByCategoryDrillDown", getRevenueByCategoryDrillDown(""));
+	        	request.setAttribute("revenueByRegion", getRevenueByRegion());
 	        	request.getRequestDispatcher("RetailDashboard.jsp").forward(request, response);
 	        } 
 	    }
@@ -250,6 +251,27 @@ public class RetailDashboardUI extends HttpServlet{
 			}
 			
 			return revenueByLocation;
+	    }
+		
+		public Map<String, Double> getRevenueByRegion(){
+			Map<String, Double> revenueByRegion = new HashMap<String, Double>();
+			
+			String query = "SELECT  \"shipToState\" as \"region\", SUM(\"amount\") AS \"revenue\" "
+			+ "FROM \"TransactionHistory\" AS A "
+			+ "GROUP BY \"shipToState\"";
+			
+			ResultSet rst;
+			try {
+				rst = conn.createStatement().executeQuery(query);
+				while (rst.next()) {
+					revenueByRegion.put(rst.getString("region"), rst.getDouble("revenue"));
+		        	System.out.println(rst.getString("region") + " " + rst.getInt("revenue"));
+		        }
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			
+			return revenueByRegion;
 	    }
 	    
 	    public void testPubSub() {

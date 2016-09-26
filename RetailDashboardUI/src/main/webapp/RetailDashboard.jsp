@@ -450,12 +450,67 @@ div#customer_container{
 		}); 
 	  }        
       
+	    function drawRevenueByRegionChart(){
+	    	$(function () {
+	    	    // Create the chart
+	    	    $('#chart2').highcharts({
+	    	        chart: {
+	    	            type: 'column'
+	    	        },
+	    	        title: {
+	    	            text: 'Revenue by Region'
+	    	        },
+	    	        xAxis: {
+	    	            type: 'Region'
+	    	        },
+	    	        yAxis: {
+	    	            title: {
+	    	                text: 'Revenue'
+	    	            }
+
+	    	        },
+	    	        legend: {
+	    	            enabled: false
+	    	        },
+	    	        plotOptions: {
+	    	            series: {
+	    	                borderWidth: 0,
+	    	                dataLabels: {
+	    	                    enabled: true,
+	    	                    format: '{point.y:.2f}'
+	    	                }
+	    	            }
+	    	        },
+
+	    	        tooltip: {
+	    	            headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+	    	            pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}</b> of total<br/>'
+	    	        },
+
+	    	        series: [{
+	    	            name: 'Region',
+	    	            colorByPoint: true,
+	    	            data: [
+	    	                   <c:forEach items="${revenueByRegion}" var="region">
+          							{	
+                						name: '${region.key}',
+          								y:	  ${region.value},  
+          								drilldown: '${region.key}'
+          							},
+          						</c:forEach> 
+          				]
+	    	        }]
+	    	    });
+	    	});
+	  }  
+	    
 	  function loadCharts(){
     	  google.charts.load('current', {packages: ['corechart', 'bar', 'table', 'map', 'line','geochart']});
     	  google.charts.setOnLoadCallback(drawRevenueVsSentiment);
     	  //google.charts.setOnLoadCallback(drawRevenueByCategoryChart);
     	  google.charts.setOnLoadCallback(drawRevenueBySubCategoryChart);
     	  google.charts.setOnLoadCallback(drawSentimentByRegionGeoChart);
+    	  
     	  drawRevenueByCategoryChart();
       }
 
