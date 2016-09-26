@@ -512,6 +512,7 @@ div#customer_container{
     	  google.charts.setOnLoadCallback(drawSentimentByRegionGeoChart);
     	  
     	  drawRevenueByCategoryChart();
+    	  drawRevenueByRegionChart();
       }
 
     </script>
