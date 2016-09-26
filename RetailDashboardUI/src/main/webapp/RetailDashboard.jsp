@@ -459,9 +459,12 @@ div#customer_container{
 	    	        },
 	    	        title: {
 	    	            text: 'Revenue by Region'
+	    	            style: {
+	    		    		fontSize: '11'
+	    		        }
 	    	        },
 	    	        xAxis: {
-	    	            type: 'Region'
+	    	            type: 'category'
 	    	        },
 	    	        yAxis: {
 	    	            title: {
