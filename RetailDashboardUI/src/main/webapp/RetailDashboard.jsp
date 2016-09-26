@@ -259,7 +259,6 @@ div#customer_container{
 					revenueSentimentChart.draw(revenueSentimentChartData, revenueSentimentChartOptions);
 					
 					var regionIndex = regionMap.get(message.data.region);
-					console.log("sentimentByRegionChartData.getValue(regionIndex,1): " + sentimentByRegionChartData.getValue(regionIndex,1));
 					var currentRegionSentiment = sentimentByRegionChartData.getValue(regionIndex,1);
 					var adjustedRegionSentiment = currentRegionSentiment + sentimentAdjustment;
 					
