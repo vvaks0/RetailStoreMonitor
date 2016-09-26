@@ -457,7 +457,7 @@ div#customer_container{
 	    	            type: 'column'
 	    	        },
 	    	        title: {
-	    	            text: 'Revenue by Region'
+	    	            text: 'Revenue by Region',
 	    	            style: {
 	    		    		fontSize: '11'
 	    		        }
