@@ -508,7 +508,7 @@ div#customer_container{
     	  google.charts.load('current', {packages: ['corechart', 'bar', 'table', 'map', 'line','geochart']});
     	  google.charts.setOnLoadCallback(drawRevenueVsSentiment);
     	  //google.charts.setOnLoadCallback(drawRevenueByCategoryChart);
-    	  google.charts.setOnLoadCallback(drawRevenueBySubCategoryChart);
+    	  //google.charts.setOnLoadCallback(drawRevenueBySubCategoryChart);
     	  google.charts.setOnLoadCallback(drawSentimentByRegionGeoChart);
     	  
     	  drawRevenueByCategoryChart();
