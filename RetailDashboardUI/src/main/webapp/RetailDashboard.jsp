@@ -230,6 +230,7 @@ div#customer_container{
 	var sentimentByRegionChartOptions;
 	var currentRevenue = 0;
 	var currentSentiment = 0;
+	var revenueByRegionData = new Map();
 	
 	dojo.ready(connectDeviceTopic)
 	function connectDeviceTopic(){
@@ -238,8 +239,13 @@ div#customer_container{
 				if(message.channel == incomingTransactionsChannel){
 					console.log(message);
 					
-					currentTimeStamp = message.data.transactionTimeStamp;
-					currentRevenue = currentRevenue + message.data.amount;
+					var currentTimeStamp = message.data.transactionTimeStamp;
+					var currentRegion = message.data.shipToState;
+					var currentRevenue += message.data.amount;
+					
+					var currentRevenueByRegionObject = revenueByRegionData.get(currentRegion);
+					currentRevenueByRegionObject.y += message.data.amount;
+					revenueByRegionData.set(currentRegion, currentRevenueByRegionObject);
 					
 					revenueSentimentChartData.addRows([[currentTimeStamp, currentRevenue, currentSentiment]]);
 					revenueSentimentChart.draw(revenueSentimentChartData, revenueSentimentChartChartOptions);
@@ -253,7 +259,7 @@ div#customer_container{
 						sentimentAdjustment = message.data.sentiment;
 					
 					currentTimeStamp = message.data.transactionTimeStamp;
-					currentSentiment = currentSentiment + sentimentAdjustment;
+					currentSentiment += sentimentAdjustment;
 					
 					revenueSentimentChartData.addRows([[currentTimeStamp, currentRevenue, currentSentiment]]);
 					revenueSentimentChart.draw(revenueSentimentChartData, revenueSentimentChartOptions);
@@ -450,6 +456,12 @@ div#customer_container{
 	  }        
       
 	    function drawRevenueByRegionChart(){
+	    	
+	    	<c:forEach items="${revenueByRegion}" var="region">
+				var object = {name:'${region.key}', y:${region.value}, drilldown: '${region.key}'};
+	    		revenueByRegionData.put('${region.key}', object); 
+			</c:forEach>
+				
 	    	$(function () {
 	    	    // Create the chart
 	    	    $('#chart2').highcharts({
@@ -466,10 +478,7 @@ div#customer_container{
 	    	            type: 'category'
 	    	        },
 	    	        yAxis: {
-	    	            title: {
-	    	                text: 'Revenue'
-	    	            }
-
+	    	            title: {text: 'Revenue'}
 	    	        },
 	    	        legend: {
 	    	            enabled: false
@@ -494,11 +503,11 @@ div#customer_container{
 	    	            colorByPoint: true,
 	    	            data: [
 	    	                   <c:forEach items="${revenueByRegion}" var="region">
-          							{	
-                						name: '${region.key}',
-          								y:	  ${region.value},  
-          								drilldown: '${region.key}'
-          							},
+          							revenueByRegionData.get('${region.key}'),
+                                    revenueByRegionData.get('${region.key}'),
+                                  	revenueByRegionData.get('${region.key}'),
+                                    revenueByRegionData.get('${region.key}'),
+                                  	revenueByRegionData.get('${region.key}'),
           						</c:forEach> 
           				]
 	    	        }]
