@@ -459,7 +459,7 @@ div#customer_container{
 	    	
 	    	<c:forEach items="${revenueByRegion}" var="region">
 				var object = {name:'${region.key}', y:${region.value}, drilldown: '${region.key}'};
-	    		revenueByRegionData.put('${region.key}', object); 
+	    		revenueByRegionData.set('${region.key}', object); 
 			</c:forEach>
 				
 	    	$(function () {
