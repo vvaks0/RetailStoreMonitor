@@ -246,6 +246,8 @@ div#customer_container{
 					var currentRevenueByRegionObject = revenueByRegionData.get(currentRegion);
 					currentRevenueByRegionObject.y += message.data.amount;
 					revenueByRegionData.set(currentRegion, currentRevenueByRegionObject);
+					console.log("Current Region: " + currentRegion + "Current RevenueByRegionObject: " + currentRevenueByRegionObject);
+					//drawRevenueByRegionChart();
 					
 					revenueSentimentChartData.addRows([[currentTimeStamp, currentRevenue, currentSentiment]]);
 					revenueSentimentChart.draw(revenueSentimentChartData, revenueSentimentChartChartOptions);
