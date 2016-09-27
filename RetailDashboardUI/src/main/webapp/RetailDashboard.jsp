@@ -247,7 +247,15 @@ div#customer_container{
 					currentRevenueByRegionObject.y += message.data.amount;
 					revenueByRegionData.set(currentRegion, currentRevenueByRegionObject);
 					console.log("Current Region: " + currentRegion + " Current RevenueByRegionObject: " + JSON.stringify(currentRevenueByRegionObject));
-					//drawRevenueByRegionChart();
+					var array = [];
+					revenueByRegionData.forEach(function(value, key) {
+					    array.push(value.y);
+					});
+					$(function () {
+						var chart = $('#chart2').highcharts();
+						chart.series[0].setData(array);
+						console.log("Updated Chart Data: " + chart.series[0].data);
+					});
 					
 					revenueSentimentChartData.addRows([[currentTimeStamp, currentRevenue, currentSentiment]]);
 					revenueSentimentChart.draw(revenueSentimentChartData, revenueSentimentChartChartOptions);
