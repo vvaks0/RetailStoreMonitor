@@ -241,7 +241,7 @@ div#customer_container{
 					
 					var currentTimeStamp = message.data.transactionTimeStamp;
 					var currentRegion = message.data.shipToState;
-					var currentRevenue += message.data.amount;
+					currentRevenue += message.data.amount;
 					
 					var currentRevenueByRegionObject = revenueByRegionData.get(currentRegion);
 					currentRevenueByRegionObject.y += message.data.amount;
@@ -504,10 +504,6 @@ div#customer_container{
 	    	            data: [
 	    	                   <c:forEach items="${revenueByRegion}" var="region">
           							revenueByRegionData.get('${region.key}'),
-                                    revenueByRegionData.get('${region.key}'),
-                                  	revenueByRegionData.get('${region.key}'),
-                                    revenueByRegionData.get('${region.key}'),
-                                  	revenueByRegionData.get('${region.key}'),
           						</c:forEach> 
           				]
 	    	        }]
