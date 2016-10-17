@@ -227,7 +227,7 @@ waitForNifiServlet () {
 # Import NIFI Template
 deployTemplateToNifi () {
        	echo "*********************************Importing NIFI Template..."
-       	TEMPLATEID=$(curl -v -F template=@"$ROOT_PATH/Nifi/template/CreditFraudDetectionFlow.xml" -X POST http://$AMBARI_HOST:9090/nifi-api/process-groups/root/templates/upload | grep -Po '<id>([a-z0-9-]+)' | grep -Po '>([a-z0-9-]+)' | grep -Po '([a-z0-9-]+)')
+       	TEMPLATEID=$(curl -v -F template=@"$ROOT_PATH/Nifi/template/RetailTransactionMonitor.xml" -X POST http://$AMBARI_HOST:9090/nifi-api/process-groups/root/templates/upload | grep -Po '<id>([a-z0-9-]+)' | grep -Po '>([a-z0-9-]+)' | grep -Po '([a-z0-9-]+)')
        	sleep 2
 
        	echo "*********************************Instantiating NIFI Flow..."
@@ -340,23 +340,24 @@ cp -vf metainfo.json /home/docker/dockerbuild/transactionmonitorui
 cp -vf resources.json /home/docker/dockerbuild/transactionmonitorui
 
 # Build from source
-echo "*********************************Building Credit Card Transaction Monitor Storm Topology"
-cd $ROOT_PATH/CreditCardTransactionMonitor
-#mvn clean package
-cp -vf target/CreditCardTransactionMonitor-0.0.1-SNAPSHOT.jar /home/storm
+echo "*********************************Building Retail Transaction Monitor Storm Topology"
+cd $ROOT_PATH/RetailTransactionMonitor
+mvn clean package
+cp -vf target/RetailTransactionMonitor-0.0.1-SNAPSHOT.jar /home/storm
 
-# Build from source
-echo "*********************************Building Credit Card Transaction Simulator"
-cd $ROOT_PATH/CreditCardTransactionSimulator
-#mvn clean package
-cp -vf target/CreditCardTransactionSimulator-0.0.1-SNAPSHOT-jar-with-dependencies.jar $ROOT_PATH
+#Build Device Simulator from source
+echo "*********************************Building Simulator"
+cd $ROOT_PATH
+git clone https://github.com/vakshorton/DataSimulators.git
+mvn clean package
+cp -vf target/DeviceSimulator-0.0.1-SNAPSHOT-jar-with-dependencies.jar $ROOT_PATH
 
 # Build from source
 echo "*********************************Building Nifi Atlas Reporter"
+cd $ROOT_PATH
 git clone https://github.com/vakshorton/NifiAtlasLineageReporter.git
 cd $ROOT_PATH/NifiAtlasLineageReporter
-#mvn clean install
-
+mvn clean install
 
 NIFI_SERVICE_PRESENT=$(serviceExists NIFI)
 if [[ "$NIFI_SERVICE_PRESENT" == 0 ]]; then
@@ -435,12 +436,12 @@ fi
 
 # Deploy Storm Topology
 echo "*********************************Deploying Storm Topology..."
-storm jar /home/storm/CreditCardTransactionMonitor-0.0.1-SNAPSHOT.jar com.hortonworks.iot.financial.topology.CreditCardTransactionMonitorTopology
+storm jar /home/storm/RetailTransactionMonitor-0.0.1-SNAPSHOT.jar com.hortonworks.iot.retail.topology.RetailTransactionMonitorTopology
 
 # Download Docker Images
 echo "*********************************Downloading Docker Images for UI..."
 service docker start
-docker pull vvaks/transactionmonitorui
+#docker pull vvaks/transactionmonitorui
 docker pull vvaks/cometd
 
 # Reboot to refresh configuration
