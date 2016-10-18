@@ -29,9 +29,9 @@ serviceExists () {
        	SERVICE_STATUS=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/$SERVICE | grep '"status" : ' | grep -Po '([0-9]+)')
 
        	if [ "$SERVICE_STATUS" == 404 ]; then
-       		return 0
+       		echo 0
        	else
-       		return 1
+       		echo 1
        	fi
 }
 
@@ -63,8 +63,8 @@ waitForService () {
 
 stopService () {
        	SERVICE=$1
-       	SERVICE_STATUS=$(getServiceStatus SERVICE)
-       	echo "*********************************Stopping Service $SERVICE..."
+       	SERVICE_STATUS=$(getServiceStatus $SERVICE)
+       	echo "*********************************Stopping Service $SERVICE ..."
        	if [ "$SERVICE_STATUS" == STARTED ]; then
         TASKID=$(curl -u admin:admin -H "X-Requested-By:ambari" -i -X PUT -d '{"RequestInfo": {"context": "Stop $SERVICE"}, "ServiceInfo": {"state": "INSTALLED"}}' http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/$SERVICE | grep "id" | grep -Po '([0-9]+)')
 
@@ -80,16 +80,16 @@ stopService () {
             sleep 2
         done
         echo "*********************************$SERVICE Service Stopped..."
-       	elif [ "$SERVICE_TATUS" == INSTALLED ]; then
+       	elif [ "$SERVICE_STATUS" == INSTALLED ]; then
        	echo "*********************************$SERVICE Service Stopped..."
        	fi
 }
 
 startService (){
        	SERVICE=$1
-       	SERVICE_STATUS=$(getServiceStatus SERVICE)
-       		echo "*********************************Starting Service $SERVICE..."
-       	if [ "$SERVICE_STATUS" == Stopped ]; then
+       	SERVICE_STATUS=$(getServiceStatus $SERVICE)
+       		echo "*********************************Starting Service $SERVICE ..."
+       	if [ "$SERVICE_STATUS" == INSTALLED ]; then
         TASKID=$(curl -u admin:admin -H "X-Requested-By:ambari" -i -X PUT -d '{"RequestInfo": {"context": "Start $SERVICE"}, "ServiceInfo": {"state": "STARTED"}}' http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/$SERVICE | grep "id" | grep -Po '([0-9]+)')
 
         echo "*********************************Start $SERVICE TaskID $TASKID"
@@ -104,7 +104,7 @@ startService (){
             sleep 2
         done
         echo "*********************************$SERVICE Service Started..."
-       	elif [ "$SERVICE_TATUS" == STARTED ]; then
+       	elif [ "$SERVICE_STATUS" == STARTED ]; then
        	echo "*********************************$SERVICE Service Started..."
        	fi
 }
@@ -165,7 +165,7 @@ installNifiService () {
         sleep 2
        	/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME nifi-flow-env $ROOT_PATH/Nifi/config/nifi-flow-env.json
        	sleep 2
-       	/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME nifi-logback-env $ROOT_PATH/Nifi/config/nifi-logback-env.json
+       	#/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME nifi-logback-env $ROOT_PATH/Nifi/config/nifi-logback-env.json
        	sleep 2
        	/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME nifi-properties-env $ROOT_PATH/Nifi/config/nifi-properties-env.json
 
@@ -191,24 +191,6 @@ installNifiService () {
        	done
 }
 
-startNifiService () {
-       	echo "*********************************Starting NIFI Service..."
-       	# Start NIFI service
-       	TASKID=$(curl -u admin:admin -H "X-Requested-By:ambari" -i -X PUT -d '{"RequestInfo":  	{"context" :"Start NIFI"}, "Body": {"ServiceInfo": {"maintenance_state" : "OFF", "state": "STARTED"}}}' http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/NIFI | grep "id" | grep -Po '([0-9]+)')
-       	echo "*********************************AMBARI TaskID " $TASKID
-       	sleep 2
-       	LOOPESCAPE="false"
-       	until [ "$LOOPESCAPE" == true ]; do
-       	TASKSTATUS=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/requests/$TASKID | grep "request_status" | grep -Po '([A-Z]+)')
-       	if [ "$TASKSTATUS" == COMPLETED ]; then
-            LOOPESCAPE="true"
-       	fi
-       	echo "*********************************Task Status" $TASKSTATUS
-       	sleep 2
-       	done
-       	echo "*********************************NIFI Service Started..."
-}
-
 waitForNifiServlet () {
        	LOOPESCAPE="false"
        	until [ "$LOOPESCAPE" == true ]; do
@@ -232,7 +214,7 @@ deployTemplateToNifi () {
 
        	echo "*********************************Instantiating NIFI Flow..."
        	# Instantiate NIFI Template
-       	curl -u admin:admin -i -H "Content-Type:application/json" -d "{\"templateId\"=\"$TEMPLATEID\"&\"originX\"=100&\"originY\"=100" -X POST http://$AMBARI_HOST:9090/nifi-api/process-groups/root/template-instance
+       	curl -u admin:admin -i -H "Content-Type:application/json" -d "{\"templateId\":\"$TEMPLATEID\",\"originX\":100,\"originY\":100}" -X POST http://$AMBARI_HOST:9090/nifi-api/process-groups/root/template-instance
 }
 
 # Start NIFI Flow
@@ -255,7 +237,7 @@ startNifiFlow () {
        			if ! [[ -z $(echo $TYPE|grep "PutKafka") ]]; then
        				echo "***************************This is a PutKafka Processor"
        				echo "***************************Updating Kafka Broker Porperty and Activating Processor..."
-       				PAYLOAD=$(echo "{\"id\":\"$ID\",\"revision\":{\"version\":$REVISION},\"component\":{\"id\":\"$ID\",\"config\":{\"properties\":{\"Known Brokers\":\"$KAFKA_BROKER:6667\"}},\"state\":\"RUNNING\"}}")
+       				PAYLOAD=$(echo "{\"id\":\"$ID\",\"revision\":{\"version\":$REVISION},\"component\":{\"id\":\"$ID\",\"config\":{\"properties\":{\"Known Brokers\":\"$AMBARI_HOST:6667\"}},\"state\":\"RUNNING\"}}")
        			echo "$PAYLOAD"
        		else
        			echo "***************************Activating Processor..."
@@ -264,6 +246,30 @@ startNifiFlow () {
        		fi
        		curl -u admin:admin -i -H "Content-Type:application/json" -d "${PAYLOAD}" -X PUT ${TARGETS[i]}
        	done
+}
+
+enablePhoenix () {
+	echo "*********************************Enabling Phoenix..."
+	/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME "phoenix.functions.allowUserDefinedFunctions" "true”
+	sleep 1
+	/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME "hbase.defaults.for.version.skip" : "true",
+	sleep 1
+	/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME "hbase.regionserver.wal.codec" "org.apache.hadoop.hbase.regionserver.wal.IndexedWALEditCodec"
+	sleep 1
+	/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME "hbase.region.server.rpc.scheduler.factory.class" "org.apache.hadoop.hbase.ipc.PhoenixRpcSchedulerFactory"
+	sleep 1
+	/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME "hbase.rpc.controllerfactory.class" "org.apache.hadoop.hbase.ipc.controller.ServerRpcControllerFactory"
+}
+
+configureYarnMemory () {
+	YARN_MEM_MAX=$(/var/lib/ambari-server/resources/scripts/configs.sh get vvaks Demo yarn-site | grep "yarn.scheduler.maximum-allocation-mb"|grep -Po ': "([0-9]+)"'|grep -Po '([0-9]+)')
+	echo "*********************************yarn.scheduler.maximum-allocation-mb is set to $YARN_MEM_MAX MB"
+	if [[ $YARN_MEM_MAX -lt 6000 ]]; then
+		echo "*********************************Changing YARN Container Memory Size..."
+		/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME yarn-site "yarn.scheduler.maximum-allocation-mb" "6144"
+		sleep 1	
+		/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME yarn-site "yarn.nodemanager.resource.memory-mb" "6144"
+	fi	
 }
 
 getKafkaBroker () {
@@ -331,13 +337,13 @@ sudo -u hdfs hadoop fs -chown root:hdfs /user/root/
 echo " 				  *****************Creating Docker Home Folder..."
 mkdir /home/docker/
 mkdir /home/docker/dockerbuild/
-mkdir /home/docker/dockerbuild/transactionmonitorui
+mkdir /home/docker/dockerbuild/retailmonitorui
 
 echo "*********************************Staging Slider Configurations..."
 cd $ROOT_PATH/SliderConfig
-cp -vf appConfig.json /home/docker/dockerbuild/transactionmonitorui
-cp -vf metainfo.json /home/docker/dockerbuild/transactionmonitorui
-cp -vf resources.json /home/docker/dockerbuild/transactionmonitorui
+cp -vf appConfig.json /home/docker/dockerbuild/retailmonitorui
+cp -vf metainfo.json /home/docker/dockerbuild/retailmonitorui
+cp -vf resources.json /home/docker/dockerbuild/retailmonitorui
 
 # Build from source
 echo "*********************************Building Retail Transaction Monitor Storm Topology"
@@ -371,13 +377,28 @@ else
        	echo "*********************************NIFI Service Already Installed"
 fi
 
-echo "*********************************Deploying NIFI Template..."
+NIFI_STATUS=$(getServiceStatus NIFI)
+echo "*********************************Checking NIFI status..."
+if ! [[ $NIFI_STATUS == STARTED || $NIFI_STATUS == INSTALLED ]]; then
+       	echo "*********************************NIFI is in a transitional state, waiting..."
+       	waitForService NIFI
+       	echo "*********************************NIFI has entered a ready state..."
+fi
+
+if [[ $NIFI_STATUS == INSTALLED ]]; then
+       	startService NIFI
+else
+       	echo "*********************************NIFI Service Started..."
+fi
 waitForNifiServlet
+echo "*********************************Deploying NIFI Template..."
 deployTemplateToNifi
 
 echo "*********************************Starting NIFI Flow ..."
 startNifiFlow
 
+mkdir /var/run/nifi
+chown nifi:nifi /var/run/nifi
 NIFI_HOME=$(ls /opt/|grep nifi)
 if [ -z "$NIFI_HOME" ]; then
         NIFI_HOME=$(ls /opt/|grep HDF)
@@ -395,7 +416,7 @@ if ! [[ $KAFKA_STATUS == STARTED || $KAFKA_STATUS == INSTALLED ]]; then
        	echo "*********************************KAFKA has entered a ready state..."
 fi
 
-if [[ $KAFKA_STATUS == STOPPED ]]; then
+if [[ $KAFKA_STATUS == INSTALLED ]]; then
        	startService KAFKA
 else
        	echo "*********************************KAFKA Service Started..."
@@ -406,7 +427,7 @@ echo "*********************************Creating Kafka Topics..."
 /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --zookeeper $AMBARI_HOST:2181 --replication-factor 1 --partitions 1 --topic IncomingTransactions
 /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --zookeeper $AMBARI_HOST:2181 --replication-factor 1 --partitions 1 --topic CustomerTransactionValidation
 
-HBASE_STATUS=getServiceStatus HBASE
+HBASE_STATUS=$(getServiceStatus HBASE)
 echo "*********************************Checking HBASE status..."
 if ! [[ $HBASE_STATUS == STARTED || $HBASE_STATUS == INSTALLED ]]; then
        	echo "*********************************HBASE is in a transitional state, waiting..."
@@ -414,13 +435,13 @@ if ! [[ $HBASE_STATUS == STARTED || $HBASE_STATUS == INSTALLED ]]; then
        	echo "*********************************HBASE has entered a ready state..."
 fi
 
-if [[ $HBASE_STATUS == STOPPED ]]; then
+if [[ $HBASE_STATUS == INSTALLED ]]; then
        	startService HBASE
 else
        	echo "*********************************HBASE Service Started..."
 fi
 
-STORM_STATUS=getServiceStatus STORM
+STORM_STATUS=$(getServiceStatus STORM)
 echo "*********************************Checking STORM status..."
 if ! [[ $STORM_STATUS == STARTED || $STORM_STATUS == INSTALLED ]]; then
        	echo "*********************************STORM is in a transitional state, waiting..."
@@ -428,21 +449,24 @@ if ! [[ $STORM_STATUS == STARTED || $STORM_STATUS == INSTALLED ]]; then
        	echo "*********************************STORM has entered a ready state..."
 fi
 
-if [[ $STORM_STATUS == STOPPED ]]; then
+if [[ $STORM_STATUS == INSTALLED ]]; then
        	startService STORM
 else
        	echo "*********************************STORM Service Started..."
 fi
 
-# Deploy Storm Topology
-echo "*********************************Deploying Storm Topology..."
-storm jar /home/storm/RetailTransactionMonitor-0.0.1-SNAPSHOT.jar com.hortonworks.iot.retail.topology.RetailTransactionMonitorTopology
-
 # Download Docker Images
 echo "*********************************Downloading Docker Images for UI..."
 service docker start
-#docker pull vvaks/transactionmonitorui
+docker pull vvaks/retailmonitorui
 docker pull vvaks/cometd
+
+echo "*********************************Checking Yarn and Phoenix Configurations..."
+configureYarnMemory
+enablePhoenix
+echo "*********************************Setting Ambari-Server to Start on Boot..."
+chkconfig --add docker
+chkconfig docker on
 
 # Reboot to refresh configuration
 reboot now
