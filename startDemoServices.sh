@@ -71,7 +71,7 @@ if ! [[ $ZOOKEEPER_STATUS == STARTED || $ZOOKEEPER_STATUS == INSTALLED ]]; then
        	echo "*********************************ZOOKEEPER has entered a ready state..."
 fi
 
-if [[ $ZOOKEEPER == INSTALLED ]]; then
+if [[ $ZOOKEEPER_STATUS == INSTALLED ]]; then
        	startService ZOOKEEPER
 else
        	echo "*********************************ZOOKEEPER Service Started..."
@@ -143,7 +143,7 @@ fi
 
 sleep 1
 # Start Atlas
-ATLAS_STATUS=$(getServiceStatus STORM)
+ATLAS_STATUS=$(getServiceStatus ATLAS)
 echo "*********************************Checking ATLAS status..."
 if ! [[ $ATLAS_STATUS == STARTED || $ATLAS_STATUS == INSTALLED ]]; then
        	echo "*********************************ATLAS is in a transitional state, waiting..."
@@ -151,7 +151,7 @@ if ! [[ $ATLAS_STATUS == STARTED || $ATLAS_STATUS == INSTALLED ]]; then
        	echo "*********************************ATLAS has entered a ready state..."
 fi
 
-if [[ ATLAS_STATUS == INSTALLED ]]; then
+if [[ $ATLAS_STATUS == INSTALLED ]]; then
        	startService ATLAS
 else
        	echo "*********************************ATLAS Service Started..."
@@ -167,7 +167,7 @@ if ! [[ $STORM_STATUS == STARTED || $STORM_STATUS == INSTALLED ]]; then
        	echo "*********************************STORM has entered a ready state..."
 fi
 
-if [[ STORM_STATUS == INSTALLED ]]; then
+if [[ $STORM_STATUS == INSTALLED ]]; then
        	startService STORM
 else
        	echo "*********************************STORM Service Started..."
