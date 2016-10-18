@@ -470,8 +470,8 @@ echo "*********************************Checking Yarn and Phoenix Configurations.
 configureYarnMemory
 enablePhoenix
 echo "*********************************Setting Ambari-Server to Start on Boot..."
-chkconfig --add docker
-chkconfig docker on
+chkconfig --add ambari-server
+chkconfig ambari-server on
 
 # Reboot to refresh configuration
 reboot now
