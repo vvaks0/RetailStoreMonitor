@@ -3,7 +3,7 @@
 	<id>${project.artifactId}</id>
 	<files>
 		<file>
-			<source>target/TransactionMonitorUI-jar-with-dependencies.jar</source>
+			<source>target/RetailDashboardUI-jar-with-dependencies.jar</source>
 			<outputDirectory>/</outputDirectory>
 		</file>
 		<file>
