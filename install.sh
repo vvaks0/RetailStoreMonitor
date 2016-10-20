@@ -460,7 +460,7 @@ fi
 # Download Docker Images
 echo "*********************************Downloading Docker Images for UI..."
 service docker start
-docker pull vvaks/retailmonitorui
+docker pull vvaks/retaildashboardui
 docker pull vvaks/cometd
 
 echo "*********************************Checking Yarn and Phoenix Configurations..."

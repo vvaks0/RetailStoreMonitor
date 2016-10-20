@@ -3,10 +3,10 @@
     "metadata": {},
     "global": {},
     "components": {
-            “RETAILMONITORUI": {
-                “retailmonitorui.commandPath": "/usr/bin/docker", 
-                “retailmonitorui.options":"-d -e MAP_API_KEY=$MAP_API_KEY -e ZK_HOST=$ZK_HOST -e COMETD_HOST=$COMETD_HOST --net=host",
-                “retailmonitorui.statusCommand":"docker inspect -f {{.State.Running}} ${CONTAINER_ID} | grep true"
+            “RETAILDASHBOARDRUI": {
+                “retaildashboardui.commandPath": "/usr/bin/docker", 
+                “retaildashboardui.options":"-d -e MAP_API_KEY=$MAP_API_KEY -e ZK_HOST=$ZK_HOST -e COMETD_HOST=$COMETD_HOST --net=host",
+                “retaildashboardui.statusCommand":"docker inspect -f {{.State.Running}} ${CONTAINER_ID} | grep true"
             },
 	    "COMETD": {
                 "cometd.commandPath": "/usr/bin/docker",

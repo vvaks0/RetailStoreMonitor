@@ -1,16 +1,16 @@
 {
 "schemaVersion": "2.1",
 "application": {
-        "name": “RETAILMONITORUI",
+        "name": “RETAILDASHBOARDUI",
         "components": [
             {
-                "name": “RETAILMONITORUI",
+                "name": “RETAILDASHBOARDretaildashboarduiUI",
                 "type": "docker",
                 "dockerContainers": [
                     {
-                        "name": “retailmonitorui",
+                        "name": “retaildashboardui",
                         "commandPath": "/usr/bin/docker",
-                        "image": "vvaks/retailmonitorui",
+                        "image": "vvaks/retaildashboardui",
                         "ports": [{"containerPort" : "8090", "hostPort" : "8090"}]
                     }
                 ]

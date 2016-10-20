@@ -1,5 +1,24 @@
 #!/bin/bash
 
+waitForService () {
+       	# Ensure that Service is not in a transitional state
+       	SERVICE=$1
+       	SERVICE_STATUS=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/$SERVICE | grep '"state" :' | grep -Po '([A-Z]+)')
+       	sleep 2
+       	echo "$SERVICE STATUS: $SERVICE_STATUS"
+       	LOOPESCAPE="false"
+       	if ! [[ "$SERVICE_STATUS" == STARTED || "$SERVICE_STATUS" == INSTALLED ]]; then
+        until [ "$LOOPESCAPE" == true ]; do
+                SERVICE_STATUS=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/$SERVICE | grep '"state" :' | grep -Po '([A-Z]+)')
+            if [[ "$SERVICE_STATUS" == STARTED || "$SERVICE_STATUS" == INSTALLED ]]; then
+                LOOPESCAPE="true"
+            fi
+            echo "*********************************$SERVICE Status: $SERVICE_STATUS"
+            sleep 2
+        done
+       	fi
+}
+
 ambari-server start
 waitForAmbari
 
@@ -262,7 +281,7 @@ sudo -u hdfs hadoop fs -rm -R /user/root/.slider/cluster
 # Ensure docker service is running
 service docker start
 # Start UI servlet on Yarn using Slider
-slider create retailmonitorui --template /home/docker/dockerbuild/retailmonitorui/appConfig.json --metainfo /home/docker/dockerbuild/retailmonitorui/metainfo.json --resources /home/docker/dockerbuild/retailmonitorui/resources.json
+slider create retaildashboardui --template /home/docker/dockerbuild/retaildashboardui/appConfig.json --metainfo /home/docker/dockerbuild/retaildashboardui/metainfo.json --resources /home/docker/dockerbuild/retaildashboardui/resources.json
 
 echo "*********************************Wait 30 seconds for Application to Initialize..."
 sleep 30
