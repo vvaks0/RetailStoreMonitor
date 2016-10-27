@@ -1,31 +1,78 @@
 #!/bin/bash
 
-waitForService () {
-       	# Ensure that Service is not in a transitional state
+export AMBARI_HOST=$(hostname -f)
+echo "*********************************AMABRI HOST IS: $AMBARI_HOST"
+
+serviceExists () {
+       	SERVICE=$1
+       	SERVICE_STATUS=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/$SERVICE | grep '"status" : ' | grep -Po '([0-9]+)')
+
+       	if [ "$SERVICE_STATUS" == 404 ]; then
+       		echo 0
+       	else
+       		echo 1
+       	fi
+}
+
+getServiceStatus () {
        	SERVICE=$1
        	SERVICE_STATUS=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/$SERVICE | grep '"state" :' | grep -Po '([A-Z]+)')
-       	sleep 2
-       	echo "$SERVICE STATUS: $SERVICE_STATUS"
+
+       	echo $SERVICE_STATUS
+}
+
+waitForAmbari () {
+       	# Wait for Ambari
        	LOOPESCAPE="false"
-       	if ! [[ "$SERVICE_STATUS" == STARTED || "$SERVICE_STATUS" == INSTALLED ]]; then
-        until [ "$LOOPESCAPE" == true ]; do
-                SERVICE_STATUS=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/$SERVICE | grep '"state" :' | grep -Po '([A-Z]+)')
-            if [[ "$SERVICE_STATUS" == STARTED || "$SERVICE_STATUS" == INSTALLED ]]; then
+       	until [ "$LOOPESCAPE" == true ]; do
+        TASKSTATUS=$(curl -u admin:admin -I -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME | grep -Po 'OK')
+        if [ "$TASKSTATUS" == OK ]; then
                 LOOPESCAPE="true"
-            fi
-            echo "*********************************$SERVICE Status: $SERVICE_STATUS"
-            sleep 2
-        done
+                TASKSTATUS="READY"
+        else
+               	AUTHSTATUS=$(curl -u admin:admin -I -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME | grep HTTP | grep -Po '( [0-9]+)'| grep -Po '([0-9]+)')
+               	if [ "$AUTHSTATUS" == 403 ]; then
+               	echo "THE AMBARI PASSWORD IS NOT SET TO: admin"
+               	echo "RUN COMMAND: ambari-admin-password-reset, SET PASSWORD: admin"
+               	exit 403
+               	else
+                TASKSTATUS="PENDING"
+               	fi
        	fi
+       	echo "Waiting for Ambari..."
+        echo "Ambari Status... " $TASKSTATUS
+        sleep 2
+       	done
+}
+
+getNameNodeHost () {
+       	NAMENODE_HOST=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/HDFS/components/NAMENODE|grep "host_name"|grep -Po ': "([a-zA-Z0-9\-_!?.]+)'|grep -Po '([a-zA-Z0-9\-_!?.]+)')
+       	
+       	echo $NAMENODE_HOST
+}
+
+getMetaStoreHost () {
+       	METASTORE_HOST=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/HIVE/components/HIVE_METASTORE|grep "host_name"|grep -Po ': "([a-zA-Z0-9\-_!?.]+)'|grep -Po '([a-zA-Z0-9\-_!?.]+)')
+       	
+       	echo $METASTORE_HOST
+}
+
+getKafkaBroker () {
+       	KAFKA_BROKER=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/KAFKA/components/KAFKA_BROKER |grep "host_name"|grep -Po ': "([a-zA-Z0-9\-_!?.]+)'|grep -Po '([a-zA-Z0-9\-_!?.]+)')
+       	
+       	echo $KAFKA_BROKER
+}
+
+getAtlasHost () {
+       	ATLAS_HOST=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/ATLAS/components/ATLAS_SERVER |grep "host_name"|grep -Po ': "([a-zA-Z0-9\-_!?.]+)'|grep -Po '([a-zA-Z0-9\-_!?.]+)')
+       	
+       	echo $ATLAS_HOST
 }
 
 ambari-server start
 waitForAmbari
 
-AMBARI_HOST=$(hostname -f)
-echo "*********************************AMABRI HOST IS: $AMBARI_HOST"
-
-CLUSTER_NAME=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters |grep cluster_name|grep -Po ': "([a-zA-Z]+)'|grep -Po '[a-zA-Z]+')
+export CLUSTER_NAME=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters |grep cluster_name|grep -Po ': "(.+)'|grep -Po '[a-zA-Z0-9!$\-]+')
 
 if [[ -z $CLUSTER_NAME ]]; then
         echo "Could not connect to Ambari Server. Please run the install script on the same host where Ambari Server is installed."
@@ -33,6 +80,20 @@ if [[ -z $CLUSTER_NAME ]]; then
 else
        	echo "*********************************CLUSTER NAME IS: $CLUSTER_NAME"
 fi
+
+NAMENODE_HOST=$(getNameNodeHost)
+export NAMENODE_HOST=$NAMENODE_HOST
+ZK_HOST=$AMBARI_HOST
+export ZK_HOST=$ZK_HOST
+KAFKA_BROKER=$(getKafkaBroker)
+export KAFKA_BROKER=$KAFKA_BROKER
+METASTORE_HOST=$(getMetaStoreHost)
+export METASTORE_HOST=$METASTORE_HOST
+ATLAS_HOST=$(getAtlasHost)
+export ATLAS_HOST=$ATLAS_HOST
+COMETD_HOST=$AMBARI_HOST
+export COMETD_HOST=$COMETD_HOST
+env
 
 mkdir /var/run/nifi
 chmod 777 /var/run/nifi
@@ -88,30 +149,6 @@ startService (){
        	fi
 }
 
-waitForAmbari () {
-       	# Wait for Ambari
-       	LOOPESCAPE="false"
-       	until [ "$LOOPESCAPE" == true ]; do
-        TASKSTATUS=$(curl -u admin:admin -I -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME | grep -Po 'OK')
-        if [ "$TASKSTATUS" == OK ]; then
-                LOOPESCAPE="true"
-                TASKSTATUS="READY"
-        else
-               	AUTHSTATUS=$(curl -u admin:admin -I -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME | grep HTTP | grep -Po '( [0-9]+)'| grep -Po '([0-9]+)')
-               	if [ "$AUTHSTATUS" == 403 ]; then
-               	echo "THE AMBARI PASSWORD IS NOT SET TO: admin"
-               	echo "RUN COMMAND: ambari-admin-password-reset, SET PASSWORD: admin"
-               	exit 403
-               	else
-                TASKSTATUS="PENDING"
-               	fi
-       	fi
-       	echo "Waiting for Ambari..."
-        echo "Ambari Status... " $TASKSTATUS
-        sleep 2
-       	done
-}
-
 #Start HDFS
 HDFS_STATUS=$(getServiceStatus HDFS)
 echo "*********************************Checking HDFS status..."
@@ -157,6 +194,22 @@ if [[ $ZOOKEEPER_STATUS == INSTALLED ]]; then
        	startService ZOOKEEPER
 else
        	echo "*********************************ZOOKEEPER Service Started..."
+fi
+
+sleep 1
+#Start MAPREDUCE2
+MAPREDUCE2_STATUS=$(getServiceStatus MAPREDUCE2)
+echo "*********************************Checking HIVE status..."
+if ! [[ $MAPREDUCE2_STATUS == STARTED || $MAPREDUCE2_STATUS == INSTALLED ]]; then
+       	echo "*********************************MAPREDUCE2 is in a transitional state, waiting..."
+       	waitForService MAPREDUCE2
+       	echo "*********************************MAPREDUCE2 has entered a ready state..."
+fi
+
+if [[ $MAPREDUCE2_STATUS == INSTALLED ]]; then
+       	startService MAPREDUCE2
+else
+       	echo "*********************************MAPREDUCE2 Service Started..."
 fi
 
 sleep 1
@@ -224,19 +277,24 @@ else
 fi
 
 sleep 1
-# Start AMBARI_INFRA
-AMBARI_INFRA_STATUS=$(getServiceStatus AMBARI_INFRA)
-echo "*********************************Checking AMBARI_INFRA status..."
-if ! [[ $AMBARI_INFRA_STATUS == STARTED || $AMBARI_INFRA_STATUS == INSTALLED ]]; then
+AMBARI_INFRA_PRESENT=$(serviceExists AMBARI_INFRA)
+if [[ "$AMBARI_INFRA_PRESENT" == 1 ]]; then
+	# Start AMBARI_INFRA
+	AMBARI_INFRA_STATUS=$(getServiceStatus AMBARI_INFRA)
+	echo "*********************************Checking AMBARI_INFRA status..."
+	if ! [[ $AMBARI_INFRA_STATUS == STARTED || $AMBARI_INFRA_STATUS == INSTALLED ]]; then
        	echo "*********************************AMBARI_INFRA is in a transitional state, waiting..."
-       	waitForService AMBARI_INFRA
+		waitForService AMBARI_INFRA
        	echo "*********************************AMBARI_INFRA has entered a ready state..."
-fi
+	fi
 
-if [[ $AMBARI_INFRA_STATUS == INSTALLED ]]; then
+	if [[ $AMBARI_INFRA_STATUS == INSTALLED ]]; then
        	startService AMBARI_INFRA
-else
+	else
        	echo "*********************************AMBARI_INFRA Service Started..."
+	fi
+else
+	echo "*********************************AMBARI_INFRA is not present, skipping..."
 fi
 
 sleep 1
@@ -275,13 +333,22 @@ fi
 echo "*********************************Deploying Storm Topology..."
 storm jar /home/storm/RetailTransactionMonitor-0.0.1-SNAPSHOT.jar com.hortonworks.iot.retail.topology.RetailTransactionMonitorTopology
 
-echo "*********************************Deploying Application Container to YARN..."
-# Clear Slider working directory
-sudo -u hdfs hadoop fs -rm -R /user/root/.slider/cluster
+echo "*********************************Deploying Application Container ..."
 # Ensure docker service is running
 service docker start
-# Start UI servlet on Yarn using Slider
-slider create retaildashboardui --template /home/docker/dockerbuild/retaildashboardui/appConfig.json --metainfo /home/docker/dockerbuild/retaildashboardui/metainfo.json --resources /home/docker/dockerbuild/retaildashboardui/resources.json
 
-echo "*********************************Wait 30 seconds for Application to Initialize..."
-sleep 30
+# Clear Slider working directory
+#export HADOOP_USER_NAME=hdfs
+#echo "*********************************HADOOP_USER_NAME set to HDFS"
+#hadoop fs -rm -R /user/root/.slider/cluster
+# Start UI servlet on Yarn using Slider
+#slider create retaildashboardui --template /home/docker/dockerbuild/retaildashboardui/appConfig.json --metainfo /home/docker/dockerbuild/retaildashboardui/metainfo.json --resources /home/docker/dockerbuild/retaildashboardui/resources.json
+
+#Start UI servlet in Docker
+docker run -d --net=host vvaks/cometd
+docker run -d -e MAP_API_KEY=$MAP_API_KEY -e ZK_HOST=$ZK_HOST -e COMETD_HOST=$COMETD_HOST --net=host vvaks/retaildashboardui
+
+echo "*********************************Wait 20 seconds for Application to Initialize..."
+sleep 20
+echo "*********************************Access the UI at http://$AMBARI_HOST:8090/RetailMonitorUI/RetailDashboard"
+exit 0
