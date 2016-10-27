@@ -350,5 +350,5 @@ docker run -d -e MAP_API_KEY=$MAP_API_KEY -e ZK_HOST=$ZK_HOST -e COMETD_HOST=$CO
 
 echo "*********************************Wait 20 seconds for Application to Initialize..."
 sleep 20
-echo "*********************************Access the UI at http://$AMBARI_HOST:8090/RetailMonitorUI/RetailDashboard"
+echo "*********************************Access the UI at http://$AMBARI_HOST:8090/RetailDashboardUI/RetailDashboard"
 exit 0
