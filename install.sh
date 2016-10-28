@@ -303,6 +303,7 @@ getAtlasHost () {
        	echo $ATLAS_HOST
 }
 
+export JAVA_HOME=/usr/jdk64
 NAMENODE_HOST=$(getNameNodeHost)
 export NAMENODE_HOST=$NAMENODE_HOST
 ZK_HOST=$AMBARI_HOST
