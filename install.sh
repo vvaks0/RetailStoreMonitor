@@ -370,6 +370,7 @@ cp -vf target/RetailTransactionMonitor-0.0.1-SNAPSHOT.jar /home/storm
 echo "*********************************Building Simulator"
 cd $ROOT_PATH
 git clone https://github.com/vakshorton/DataSimulators.git
+cd DataSimulators/DeviceSimulator
 mvn clean package
 cp -vf target/DeviceSimulator-0.0.1-SNAPSHOT-jar-with-dependencies.jar $ROOT_PATH
 
@@ -387,6 +388,16 @@ if [[ "$NIFI_SERVICE_PRESENT" == 0 ]]; then
        	ambari-server restart
        	waitForAmbari
        	installNifiService
+       	
+       	mkdir /var/run/nifi
+		chown nifi:nifi /var/run/nifi
+		NIFI_HOME=$(ls /opt/|grep nifi)
+		if [ -z "$NIFI_HOME" ]; then
+        	NIFI_HOME=$(ls /opt/|grep HDF)
+		fi
+		export NIFI_HOME
+		cp -vf  $ROOT_PATH/NifiAtlasLineageReporter/target/NifiAtlasLineageReporter-0.0.1-SNAPSHOT.nar /opt/$NIFI_HOME/lib
+       	
        	startService NIFI
 else
        	echo "*********************************NIFI Service Already Installed"
@@ -405,6 +416,13 @@ if [[ $NIFI_STATUS == INSTALLED ]]; then
 else
        	echo "*********************************NIFI Service Started..."
 fi
+
+echo "*********************************Install GeoLite City DB for Nifi..."
+wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz -P /home/centos
+cd /home/centos
+gunzip -vf GeoLite2-City.mmdb.gz
+chmod 755 -R /home/centos
+
 waitForNifiServlet
 echo "*********************************Deploying NIFI Template..."
 deployTemplateToNifi
@@ -412,15 +430,6 @@ deployTemplateToNifi
 echo "*********************************Starting NIFI Flow ..."
 startNifiFlow
 
-mkdir /var/run/nifi
-chown nifi:nifi /var/run/nifi
-NIFI_HOME=$(ls /opt/|grep nifi)
-if [ -z "$NIFI_HOME" ]; then
-        NIFI_HOME=$(ls /opt/|grep HDF)
-fi
-export NIFI_HOME
-cp -vf target/NifiAtlasLineageReporter-0.0.1-SNAPSHOT.nar /opt/$NIFI_HOME/lib
-cd $ROOT_PATH
 
 #Start Kafka
 KAFKA_STATUS=$(getServiceStatus KAFKA)
@@ -440,7 +449,8 @@ fi
 #Configure Kafka
 echo "*********************************Creating Kafka Topics..."
 /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --zookeeper $AMBARI_HOST:2181 --replication-factor 1 --partitions 1 --topic IncomingTransactions
-/usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --zookeeper $AMBARI_HOST:2181 --replication-factor 1 --partitions 1 --topic CustomerTransactionValidation
+/usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --zookeeper $AMBARI_HOST:2181 --replication-factor 1 --partitions 1 --topic InventoryUpdate
+/usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --zookeeper $AMBARI_HOST:2181 --replication-factor 1 --partitions 1 --topic SocialMediaEvents
 
 HBASE_STATUS=$(getServiceStatus HBASE)
 echo "*********************************Checking HBASE status..."
