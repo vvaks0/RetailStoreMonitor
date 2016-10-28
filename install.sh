@@ -184,7 +184,7 @@ installNifiService () {
        	
        	if [ -z $TASKID ]; then
        		until ! [ -z $TASKID ]; do
-       			TASKID=$(curl -u admin:admin -H "X-Requested-By:ambari" -i -X PUT -d '{"RequestInfo": {"context" :"Install Nifi"}, "Body": {"ServiceInfo": {"maintenance_state" : "OFF", "state": "INSTALLED"}}}'
+       			TASKID=$(curl -u admin:admin -H "X-Requested-By:ambari" -i -X PUT -d '{"RequestInfo": {"context" :"Install Nifi"}, "Body": {"ServiceInfo": {"maintenance_state" : "OFF", "state": "INSTALLED"}}}')
        		 	echo "*********************************AMBARI TaskID " $TASKID
        		done
        	fi
