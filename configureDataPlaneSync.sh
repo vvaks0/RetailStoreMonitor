@@ -134,7 +134,7 @@ read DATAPLANE_METASTORE_HOST
 export ATLAS_HOST=$DATAPLANE_ATLAS_HOST
 
 echo "*********************************DATA PLANE ATLAS ENDPOINT: $DATAPLANE_ATLAS_HOST:$DATAPLANE_ATLAS_PORT"
-echo "*********************************DATA PLANE KAFKA ENDPOINT: $DATAPLANE_KAFKA_BOKER:$DATAPLANE_KAFKA_PORT"
+echo "*********************************DATA PLANE KAFKA ENDPOINT: $DATAPLANE_KAFKA_BROKER:$DATAPLANE_KAFKA_PORT"
 echo "*********************************DATA PLANE ZOOKEEPER ENDPOINT: $DATAPLANE_ZK_HOST:$DATAPLANE_ZK_PORT"
 
 echo "*********************************Setting Hive Atlas Client Configuration..."
