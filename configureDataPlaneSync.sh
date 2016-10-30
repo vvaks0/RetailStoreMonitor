@@ -158,11 +158,16 @@ echo "*********************************Setting Hive Meta Store Configuration..."
 
 echo "*********************************Restarting Services to refresh configurations..."
 stopService HIVE
+sleep 1
 stopService STORM
+sleep 1
 stopService SQOOP
+sleep 1
  
 startService HIVE
+sleep 1
 startService STORM
+sleep 1
 startService SQOOP
 
 echo "*********************************Redeploy Storm Topology..."
