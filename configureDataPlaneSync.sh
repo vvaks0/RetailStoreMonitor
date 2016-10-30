@@ -133,6 +133,10 @@ read DATAPLANE_METASTORE_HOST
 
 export ATLAS_HOST=$DATAPLANE_ATLAS_HOST
 
+echo "*********************************DATA PLANE ATLAS ENDPOINT: $DATAPLANE_ATLAS_HOST:$DATAPLANE_ATLAS_PORT"
+echo "*********************************DATA PLANE KAFKA ENDPOINT: $DATAPLANE_KAFKA_HOST:$DATAPLANE_KAFKA_PORT"
+echo "*********************************DATA PLANE ZOOKEEPER ENDPOINT: $DATAPLANE_ZK_HOST:$DATAPLANE_ZK_PORT"
+
 echo "*********************************Setting Hive Atlas Client Configuration..."
 /var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME hive-site "atlas.rest.address" "$DATAPLANE_ATLAS_HOST:$DATAPLANE_ATLAS_PORT"
 /var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME hive-atlas-application.properties "atlas.kafka.bootstrap.servers" "$DATAPLANE_KAFKA_BROKER:$DATAPLANE_KAFKA_PORT"
