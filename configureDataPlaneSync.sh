@@ -108,7 +108,7 @@ echo "HOSTNAME of the Data Plane KAFKA BROKER: "
 read DATAPLANE_KAFKA_BROKER
 echo "Listening PORT of the Data Plane KAFKA BROKER (6667): "
 read DATAPLANE_KAFKA_PORT
-if [ -z DATAPLANE_KAFKA_PORT ]; then
+if [ -z $DATAPLANE_KAFKA_PORT ]; then
 	DATAPLANE_KAFKA_PORT=6667
 fi
 
@@ -116,7 +116,7 @@ echo "HOSTNAME of a Data Plane ZOOKEEPER: "
 read DATAPLANE_ZK_HOST
 echo "Listening PORT of Data Plane ZOOKEEPER (2181): "
 read DATAPLANE_ZK_PORT
-if [ -z DATAPLANE_ZK_PORT ]; then
+if [ -z $DATAPLANE_ZK_PORT ]; then
 	DATAPLANE_ZK_PORT=2181
 fi
 
@@ -124,7 +124,7 @@ echo "HOSTNAME of the Data Plane ATLAS SERVER: "
 read DATAPLANE_ATLAS_HOST
 echo "Listening PORT of the Data Plane ATLAS SERVER (21000): "
 read DATAPLANE_ATLAS_PORT
-if [ -z DATAPLANE_ATLAS_PORT ]; then
+if [ -z $DATAPLANE_ATLAS_PORT ]; then
 	DATAPLANE_ATLAS_PORT=2181
 fi
 
@@ -134,7 +134,7 @@ read DATAPLANE_METASTORE_HOST
 export ATLAS_HOST=$DATAPLANE_ATLAS_HOST
 
 echo "*********************************DATA PLANE ATLAS ENDPOINT: $DATAPLANE_ATLAS_HOST:$DATAPLANE_ATLAS_PORT"
-echo "*********************************DATA PLANE KAFKA ENDPOINT: $DATAPLANE_KAFKA_HOST:$DATAPLANE_KAFKA_PORT"
+echo "*********************************DATA PLANE KAFKA ENDPOINT: $DATAPLANE_KAFKA_BOKER:$DATAPLANE_KAFKA_PORT"
 echo "*********************************DATA PLANE ZOOKEEPER ENDPOINT: $DATAPLANE_ZK_HOST:$DATAPLANE_ZK_PORT"
 
 echo "*********************************Setting Hive Atlas Client Configuration..."
