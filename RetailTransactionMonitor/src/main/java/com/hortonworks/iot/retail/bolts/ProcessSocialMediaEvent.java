@@ -123,5 +123,6 @@ public class ProcessSocialMediaEvent extends BaseRichBolt {
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		declarer.declareStream("SocialMediaStream", new Fields("SocialMediaEvent"));
+		declarer.declareStream("SocialMediaEmptyStream", new Fields("DummyField"));
 	}
 }

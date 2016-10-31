@@ -10,6 +10,8 @@ import org.apache.storm.StormSubmitter;
 import org.apache.storm.generated.AlreadyAliveException;
 import org.apache.storm.generated.AuthorizationException;
 import org.apache.storm.generated.InvalidTopologyException;
+import org.apache.storm.hbase.bolt.HBaseBolt;
+import org.apache.storm.hbase.bolt.mapper.SimpleHBaseMapper;
 import org.apache.storm.kafka.BrokerHosts;
 import org.apache.storm.kafka.KafkaSpout;
 import org.apache.storm.kafka.KeyValueSchemeAsMultiScheme;
@@ -118,22 +120,53 @@ public class RetailTransactionMonitorTopology {
 	      socialMediaKafkaSpoutConfig.startOffsetTime = kafka.api.OffsetRequest.LatestTime();
 	      KafkaSpout socialMediaKafkaSpout = new KafkaSpout(socialMediaKafkaSpoutConfig);
 	      
+	      Map<String, Object> hbConf = new HashMap<String, Object>();
+	      hbConf.put("hbase.rootdir", constants.getNameNode() + "/apps/hbase/data/");
+	      hbConf.put("hbase.zookeeper.quorum", constants.getZkHost());
+		  hbConf.put("hbase.zookeeper.property.clientPort", constants.getZkPort());
+	      hbConf.put("zookeeper.znode.parent", constants.getZkHBasePath());
+	      conf.put("hbase.conf", hbConf);
+	      conf.put("hbase.rootdir", constants.getNameNode() + "/apps/hbase/data/");
+	      
+	      SimpleHBaseMapper transactionHistoryMapper = new SimpleHBaseMapper()
+	              .withRowKeyField("transactionId")
+	              .withColumnFields(new Fields("DummyFields"))
+	              .withColumnFamily("Transactions");
+	      
+	      SimpleHBaseMapper transactionItemsMapper = new SimpleHBaseMapper()
+	              .withRowKeyField("transactionId")
+	              .withColumnFields(new Fields("DummyFields"))
+	              .withColumnFamily("TransactionsItems");
+	      
+	      SimpleHBaseMapper transactionSocialMapper = new SimpleHBaseMapper()
+	              .withRowKeyField("transactionId")
+	              .withColumnFields(new Fields("DummyFields"))
+	              .withColumnFamily("Transactions");
+	      
+	      SimpleHBaseMapper transactionInventoryMapper = new SimpleHBaseMapper()
+	              .withRowKeyField("transactionId")
+	              .withColumnFields(new Fields("DummyFields"))
+	              .withColumnFamily("Transactions");
 	      
 	      builder.setSpout("IncomingTransactionsKafkaSpout", incomingTransactionsKafkaSpout);
 	      builder.setBolt("InstantiateProvenance", new InstantiateProvenance(), 1).shuffleGrouping("IncomingTransactionsKafkaSpout");
 	      builder.setBolt("EnrichTransaction", new EnrichTransaction(), 1).shuffleGrouping("InstantiateProvenance");
 	      builder.setBolt("PublishTransaction", new PublishTransaction(), 1).shuffleGrouping("EnrichTransaction", "TransactionStream");
+	      builder.setBolt("PersistTransactionToHBase", new HBaseBolt("TransactionHistory", transactionHistoryMapper).withConfigKey("hbase.conf"), 1).shuffleGrouping("EnrichTransaction", "TransactionEmptyStream");
+	      builder.setBolt("PersistTransactionItemsToHBase", new HBaseBolt("TransactionItems", transactionItemsMapper).withConfigKey("hbase.conf"), 1).shuffleGrouping("EnrichTransaction", "TransactionEmptyStream");
 	      //builder.setBolt("TransactionMonitor", new TransactionMonitor().withWindow(new Duration(10), new Duration(5)),1).shuffleGrouping("EnrichTransaction", "TransactionStream").shuffleGrouping("EnrichInventoryUpdate", "InventoryStream");
 	      //builder.setBolt("AtlasLineageReporter", new AtlasLineageReporter(), 1).shuffleGrouping("TransactionMonitor", "ProvenanceRegistrationStream");
 	      
 	      builder.setSpout("InventoryUpdatesKafkaSpout", inventoryUpdatesKafkaSpout);
 	      builder.setBolt("EnrichInventoryUpdate", new EnrichInventoryUpdate(), 1).shuffleGrouping("InventoryUpdatesKafkaSpout");
+	      builder.setBolt("UpdateInventoryToHBase", new HBaseBolt("Inventory", transactionInventoryMapper).withConfigKey("hbase.conf"), 1).shuffleGrouping("EnrichInventoryUpdate", "InventoryEmptyStream");
 	      //builder.setBolt("PublishInventoryUpdate", new PublishInventoryUpdate(), 1).shuffleGrouping("EnrichInventoryUpdate", "InventoryStream");
 	      //builder.setBolt("MergeStreams", new MergeStreams().withWindow(new Count(12), new Count(6)), 1).shuffleGrouping("EnrichTransaction", "TransactionStream");//.shuffleGrouping("EnrichInventoryUpdate", "InventoryStream");
 	      
 	      builder.setSpout("SocialMediaKafkaSpout", socialMediaKafkaSpout);
 	      builder.setBolt("ProcessSocialMediaEvent", new ProcessSocialMediaEvent(), 1).shuffleGrouping("SocialMediaKafkaSpout");
 	      builder.setBolt("PublishSocialMediaEvent", new PublishSocialSentiment(), 1).shuffleGrouping("ProcessSocialMediaEvent", "SocialMediaStream");
+	      builder.setBolt("PersistSocialEventToHBase", new HBaseBolt("SocialMediaEvents", transactionSocialMapper).withConfigKey("hbase.conf"), 1).shuffleGrouping("ProcessSocialMediaEvent", "SocialMediaEmptyStream");
 	      
 	      conf.setNumWorkers(1);
 	      conf.setMaxSpoutPending(5000);

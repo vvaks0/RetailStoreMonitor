@@ -205,5 +205,6 @@ public class EnrichInventoryUpdate extends BaseRichBolt {
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		declarer.declareStream("InventoryStream", new Fields("EnrichedInventoryUpdate"));
+		declarer.declareStream("InventoryEmptyStream", new Fields("DummyField"));
 	}
 }
