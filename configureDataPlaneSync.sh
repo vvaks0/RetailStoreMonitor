@@ -170,6 +170,11 @@ startService STORM
 sleep 1
 startService SQOOP
 
+git clone https://github.com/vakshorton/Utils
+cd Utils/DataPlaneUtils
+mvn clean package
+java -jar target/DataPlaneUtils-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+
 echo "*********************************Redeploy Storm Topology..."
 storm kill RetailTransactionMonitor
 storm jar /home/storm/RetailTransactionMonitor-0.0.1-SNAPSHOT.jar com.hortonworks.iot.retail.topology.RetailTransactionMonitorTopology
