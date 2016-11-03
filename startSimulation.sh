@@ -12,9 +12,9 @@ else
 fi
 
 getNifiHost () {
-       	KAFKA_BROKER=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/NIFI/components/NIFI_MASTER|grep "host_name"|grep -Po ': "([a-zA-Z0-9\-_!?.]+)'|grep -Po '([a-zA-Z0-9\-_!?.]+)')
+       	NIFI_HOST=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/NIFI/components/NIFI_MASTER|grep "host_name"|grep -Po ': "([a-zA-Z0-9\-_!?.]+)'|grep -Po '([a-zA-Z0-9\-_!?.]+)')
 
-       	echo $KAFKA_BROKER
+       	echo $NIFI_HOST
 }
 
 NIFI_HOST=$(getNifiHost)
@@ -30,3 +30,5 @@ echo $! > RetailStoreSim.pid
 echo "*********************************Starting SocialMedia Simulation..."
 nohup java -jar DeviceSimulator-0.0.1-SNAPSHOT-jar-with-dependencies.jar SocialMedia 1000 Simulation $NIFI_HOST_IP > SocialMediaSim.log 2>&1&
 echo $! > SocialMediaSim.pid
+
+exit 0
