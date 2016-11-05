@@ -221,11 +221,25 @@ waitForNifiServlet () {
 deployTemplateToNifi () {
        	echo "*********************************Importing NIFI Template..."
        	TEMPLATEID=$(curl -v -F template=@"$ROOT_PATH/Nifi/template/RetailTransactionMonitor.xml" -X POST http://$AMBARI_HOST:9090/nifi-api/process-groups/root/templates/upload | grep -Po '<id>([a-z0-9-]+)' | grep -Po '>([a-z0-9-]+)' | grep -Po '([a-z0-9-]+)')
-       	sleep 2
+       	sleep 1
 
        	echo "*********************************Instantiating NIFI Flow..."
        	# Instantiate NIFI Template
        	curl -u admin:admin -i -H "Content-Type:application/json" -d "{\"templateId\":\"$TEMPLATEID\",\"originX\":100,\"originY\":100}" -X POST http://$AMBARI_HOST:9090/nifi-api/process-groups/root/template-instance
+       	sleep 1
+       	
+       	# Rename NIFI Root Group
+		echo "*********************************Renaming Nifi Root Group..."
+ROOT_GROUP_REVISION=$(curl -X GET http://$AMBARI_HOST:9090/nifi-api/process-groups/root |grep -Po '\"version\":([0-9]+)'|grep -Po '([0-9]+)')
+		
+		sleep 1
+		ROOT_GROUP_ID=$(curl -X GET http://$AMBARI_HOST:9090/nifi-api/process-groups/root|grep -Po '("component":{"id":")([0-9a-zA-z\-]+)'| grep -Po '(:"[0-9a-zA-z\-]+)'| grep -Po '([0-9a-zA-z\-]+)')
+
+		PAYLOAD=$(echo "{\"id\":\"$ROOT_GROUP_ID\",\"revision\":{\"version\":$ROOT_GROUP_REVISION},\"component\":{\"id\":\"$ROOT_GROUP_ID\",\"name\":\"Retail-Demo\"}}")
+		
+		sleep 1
+		curl -d $PAYLOAD  -H "Content-Type: application/json" -X PUT http://$AMBARI_HOST:9090/nifi-api/process-groups/$ROOT_GROUP_ID
+		sleep 1
 }
 
 # Start NIFI Flow
@@ -322,6 +336,14 @@ echo "export KAFKA_BROKER=$KAFKA_BROKER" >> /etc/bashrc
 echo "export ATLAS_HOST=$ATLAS_HOST" >> /etc/bashrc
 echo "export COMETD_HOST=$COMETD_HOST" >> /etc/bashrc
 
+echo "export NAMENODE_HOST=$NAMENODE_HOST" >> ~/.bash_profile
+echo "export ZK_HOST=$ZK_HOST" >> ~/.bash_profile
+echo "export KAFKA_BROKER=$KAFKA_BROKER" >> ~/.bash_profile
+echo "export ATLAS_HOST=$ATLAS_HOST" >> ~/.bash_profile
+echo "export COMETD_HOST=$COMETD_HOST" >> ~/.bash_profile
+
+. ~/.bash_profile
+
 # Install Git
 echo "*********************************Installing Git..."
 yum install -y git
@@ -386,9 +408,12 @@ cp -vf target/DeviceSimulator-0.0.1-SNAPSHOT-jar-with-dependencies.jar $ROOT_PAT
 # Build from source
 echo "*********************************Building Nifi Atlas Reporter"
 cd $ROOT_PATH
-git clone https://github.com/vakshorton/NifiAtlasLineageReporter.git
-cd $ROOT_PATH/NifiAtlasLineageReporter
+git clone https://github.com/vakshorton/NifiAtlasBridge.git
+cd $ROOT_PATH/NifiAtlasBridge/NifiAtlasFlowReportingTask
 mvn clean install
+cd $ROOT_PATH/NifiAtlasBridge/NifiAtlasLineageReportingTask
+mvn clean install
+cd $ROOT_PATH
 
 NIFI_SERVICE_PRESENT=$(serviceExists NIFI)
 if [[ "$NIFI_SERVICE_PRESENT" == 0 ]]; then
@@ -405,7 +430,10 @@ if [[ "$NIFI_SERVICE_PRESENT" == 0 ]]; then
         	NIFI_HOME=$(ls /opt/|grep HDF)
 		fi
 		export NIFI_HOME
-		cp -vf  $ROOT_PATH/NifiAtlasLineageReporter/target/NifiAtlasLineageReporter-0.0.1-SNAPSHOT.nar /opt/$NIFI_HOME/lib
+		
+		mv -vf  $ROOT_PATH/NifiAtlasBridge/NifiAtlasFlowReportingTask/target/NifiAtlasFlowReportingTask-0.0.1-SNAPSHOT.nar /opt/$NIFI_HOME/lib
+		
+		mv -vf  $ROOT_PATH/NifiAtlasBridge/NifiAtlasLineageReportingTask/target/NifiAtlasLineageReporter-0.0.1-SNAPSHOT.nar /opt/$NIFI_HOME/lib
        	
        	startService NIFI
 else
