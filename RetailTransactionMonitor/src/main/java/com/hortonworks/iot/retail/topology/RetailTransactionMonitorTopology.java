@@ -91,15 +91,17 @@ public class RetailTransactionMonitorTopology {
 	  		     .withRotationPolicy(rotationPolicy)
 	  		     .withSyncPolicy(syncPolicy); */
 	  	
-	  	System.out.println("********************** Starting Topology.......");
-	  	System.out.println("********************** Zookeeper Host: " + constants.getZkHost());
-        System.out.println("********************** Zookeeper Port: " + constants.getZkPort());
-        System.out.println("********************** Zookeeper ConnString: " + constants.getZkConnString());
-        System.out.println("********************** Zookeeper Kafka Path: " + constants.getZkKafkaPath());
-        System.out.println("********************** Zookeeper HBase Path: " + constants.getZkHBasePath());
-        System.out.println("********************** Atlas Host: " + constants.getAtlasHost());
-        System.out.println("********************** Atlas Port: " + constants.getAtlasPort());
-        System.out.println("********************** Cometd URI: " + constants.getPubSubUrl());
+	     	System.out.println("********************** Starting Topology.......");
+		  	System.out.println("********************** Name Node Url: " + constants.getNameNodeUrl());
+		  	System.out.println("********************** Zookeeper Host: " + constants.getZkHost());
+	        System.out.println("********************** Zookeeper Port: " + constants.getZkPort());
+	        System.out.println("********************** Zookeeper ConnString: " + constants.getZkConnString());
+	        System.out.println("********************** Zookeeper Kafka Path: " + constants.getZkKafkaPath());
+	        System.out.println("********************** Zookeeper HBase Path: " + constants.getZkHBasePath());
+	        System.out.println("********************** Atlas Host: " + constants.getAtlasHost());
+	        System.out.println("********************** Atlas Port: " + constants.getAtlasPort());
+	        System.out.println("********************** Metastore URI: " + constants.getHiveMetaStoreURI());
+	        System.out.println("********************** Cometd URI: " + constants.getPubSubUrl());
 	  	  
 	      Config conf = new Config(); 
 	      BrokerHosts hosts = new ZkHosts(constants.getZkConnString(), constants.getZkKafkaPath());
