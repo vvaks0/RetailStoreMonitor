@@ -332,22 +332,9 @@ getAtlasHost () {
 export JAVA_HOME=/usr/jdk64
 NAMENODE_HOST=$(getNameNodeHost)
 export NAMENODE_HOST=$NAMENODE_HOST
-ZK_HOST=$AMBARI_HOST
-export ZK_HOST=$ZK_HOST
-KAFKA_BROKER=$(getKafkaBroker)
-export KAFKA_BROKER=$KAFKA_BROKER
-ATLAS_HOST=$(getAtlasHost)
-export ATLAS_HOST=$ATLAS_HOST
-COMETD_HOST=$AMBARI_HOST
-export COMETD_HOST=$COMETD_HOST
-env
-
-export JAVA_HOME=/usr/jdk64
-NAMENODE_HOST=$(getNameNodeHost)
-export NAMENODE_HOST=$NAMENODE_HOST
 HIVESERVER_HOST=$(getHiveServerHost)
 export HIVESERVER_HOST=$HIVESERVER_HOST
-HIVE_METASTORE_HOST=$(getHiveMetaHost)
+HIVE_METASTORE_HOST=$(getHiveMetaStoreHost)
 export HIVE_METASTORE_HOST=$HIVE_METASTORE_HOST
 HIVE_METASTORE_URI=thrift://$HIVE_METASTORE_HOST:9083
 export HIVE_METASTORE_URI=$HIVE_METASTORE_URI
@@ -378,10 +365,6 @@ echo "export HIVE_METASTORE_URI=$HIVE_METASTORE_URI" >> ~/.bash_profile
 echo "export COMETD_HOST=$COMETD_HOST" >> ~/.bash_profile
 
 . ~/.bash_profile
-
-# Install Git
-echo "*********************************Installing Git..."
-yum install -y git
 
 # Install Maven
 echo "*********************************Installing Maven..."
