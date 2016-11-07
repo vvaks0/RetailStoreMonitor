@@ -22,11 +22,15 @@ public class Constants {
 	
 	private String nameNodeHost = "sandbox.hortonworks.com";
 	private String nameNodePort = "8020";
-	private String nameNode;
+	private String nameNodeUrl;
 	private String hivePath = "/demo/data/transaction_logs";
+	private String hbasePath = "/apps/hbase/data/";
 	
-	private String atlasHost = "sandbox.hortonworks.com";
+	private String atlasHost = "localhost";
 	private String atlasPort = "21000";
+	
+	private String hiveMetaStoreURI = "jdbc:mysql://sandbox.hortonworks.com/hive";
+	private String hiveDbName = "default";
 	
 	public Constants(){
 		Map<String, String> env = System.getenv();
@@ -43,14 +47,17 @@ public class Constants {
         if(env.get("ZK_HBASE_PATH") != null){
         	this.zkHBasePath = (String)env.get("ZK_HBASE_PATH");
         }
-        if(env.get("NAME_NODE_HOST") != null){
-        	this.nameNodeHost = (String)env.get("NAME_NODE_HOST");
+        if(env.get("NAMENODE_HOST") != null){
+        	this.setNameNodeHost((String)env.get("NAMENODE_HOST"));
         }
-        if(env.get("NAME_NODE_PORT") != null){
-        	this.nameNodePort = (String)env.get("NAME_NODE_PORT");
+        if(env.get("NAMENODE_PORT") != null){
+        	this.setNameNodePort((String)env.get("NAMENODE_PORT"));
         }
         if(env.get("HIVE_PATH") != null){
         	this.hivePath = (String)env.get("HIVE_PATH");
+        }
+        if(env.get("HIVE_METASTORE_URI") != null){
+        	this.hiveMetaStoreURI = (String)env.get("HIVE_METASTORE_URI");
         }
         if(env.get("ATLAS_HOST") != null){
         	this.setAtlasHost((String)env.get("ATLAS_HOST"));
@@ -67,7 +74,7 @@ public class Constants {
         
         this.zkConnString = zkHost+":"+zkPort;
         this.pubSubUrl = "http://" + cometdHost + ":" + cometdPort + "/cometd";
-        this.nameNode = "hdfs://" + nameNodeHost + ":" + nameNodePort;
+        this.nameNodeUrl = "hdfs://" + nameNodeHost + ":" + nameNodePort;
 	}
 
 	public String getZkHost() {
@@ -150,14 +157,6 @@ public class Constants {
 		this.incomingTransactionsTopicName = incomingTransactionsTopicName;
 	}
 
-	public String getNameNode() {
-		return nameNode;
-	}
-
-	public void setNameNode(String nameNode) {
-		this.nameNode = nameNode;
-	}
-
 	public String getHivePath() {
 		return hivePath;
 	}
@@ -182,12 +181,52 @@ public class Constants {
 		this.atlasPort = atlasPort;
 	}
 
-	public String getSocialMediaTopicName() {
-		return socialMediaTopicName;
+	public String getHiveMetaStoreURI() {
+		return hiveMetaStoreURI;
 	}
 
-	public void setSocialMediaTopicName(String socialMediaTopicName) {
-		this.socialMediaTopicName = socialMediaTopicName;
+	public void setHiveMetaStoreURI(String hiveMetaStoreURI) {
+		this.hiveMetaStoreURI = hiveMetaStoreURI;
+	}
+
+	public String getHiveDbName() {
+		return hiveDbName;
+	}
+
+	public void setHiveDbName(String hiveDbName) {
+		this.hiveDbName = hiveDbName;
+	}
+
+	public String getNameNodeUrl() {
+		return nameNodeUrl;
+	}
+
+	public void setNameNodeUrl(String nameNodeUrl) {
+		this.nameNodeUrl = nameNodeUrl;
+	}
+
+	public String getNameNodePort() {
+		return nameNodePort;
+	}
+
+	public void setNameNodePort(String nameNodePort) {
+		this.nameNodePort = nameNodePort;
+	}
+
+	public String getNameNodeHost() {
+		return nameNodeHost;
+	}
+
+	public void setNameNodeHost(String nameNodeHost) {
+		this.nameNodeHost = nameNodeHost;
+	}
+
+	public String getHbasePath() {
+		return hbasePath;
+	}
+
+	public void setHbasePath(String hbasePath) {
+		this.hbasePath = hbasePath;
 	}
 
 	public String getInventoryUpdatesTopicName() {
@@ -196,6 +235,14 @@ public class Constants {
 
 	public void setInventoryUpdatesTopicName(String inventoryUpdatesTopicName) {
 		this.inventoryUpdatesTopicName = inventoryUpdatesTopicName;
+	}
+
+	public String getSocialMediaTopicName() {
+		return socialMediaTopicName;
+	}
+
+	public void setSocialMediaTopicName(String socialMediaTopicName) {
+		this.socialMediaTopicName = socialMediaTopicName;
 	}
 
 	public String getSocialMediaChannel() {

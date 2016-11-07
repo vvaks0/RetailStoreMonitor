@@ -1,6 +1,7 @@
 package com.hortonworks.iot.retail.topology;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -12,6 +13,9 @@ import org.apache.storm.generated.AuthorizationException;
 import org.apache.storm.generated.InvalidTopologyException;
 import org.apache.storm.hbase.bolt.HBaseBolt;
 import org.apache.storm.hbase.bolt.mapper.SimpleHBaseMapper;
+import org.apache.storm.hive.bolt.HiveBolt;
+import org.apache.storm.hive.bolt.mapper.DelimitedRecordHiveMapper;
+import org.apache.storm.hive.common.HiveOptions;
 import org.apache.storm.kafka.BrokerHosts;
 import org.apache.storm.kafka.KafkaSpout;
 import org.apache.storm.kafka.KeyValueSchemeAsMultiScheme;
@@ -41,6 +45,7 @@ import com.hortonworks.iot.retail.bolts.AtlasLineageReporter;
 import com.hortonworks.iot.retail.bolts.EnrichInventoryUpdate;
 import com.hortonworks.iot.retail.bolts.EnrichTransaction;
 import com.hortonworks.iot.retail.bolts.TransactionMonitor;
+import com.hortonworks.iot.retail.events.Product;
 import com.hortonworks.iot.retail.bolts.InstantiateProvenance;
 import com.hortonworks.iot.retail.bolts.MergeStreams;
 import com.hortonworks.iot.retail.bolts.ProcessSocialMediaEvent;
@@ -121,12 +126,12 @@ public class RetailTransactionMonitorTopology {
 	      KafkaSpout socialMediaKafkaSpout = new KafkaSpout(socialMediaKafkaSpoutConfig);
 	      
 	      Map<String, Object> hbConf = new HashMap<String, Object>();
-	      hbConf.put("hbase.rootdir", constants.getNameNode() + "/apps/hbase/data/");
+	      hbConf.put("hbase.rootdir", constants.getNameNodeUrl() + constants.getHbasePath());
 	      hbConf.put("hbase.zookeeper.quorum", constants.getZkHost());
 		  hbConf.put("hbase.zookeeper.property.clientPort", constants.getZkPort());
 	      hbConf.put("zookeeper.znode.parent", constants.getZkHBasePath());
 	      conf.put("hbase.conf", hbConf);
-	      conf.put("hbase.rootdir", constants.getNameNode() + "/apps/hbase/data/");
+	      conf.put("hbase.rootdir", constants.getNameNodeUrl() + constants.getHbasePath());
 	      
 	      SimpleHBaseMapper transactionHistoryMapper = new SimpleHBaseMapper()
 	              .withRowKeyField("transactionId")
@@ -148,12 +153,30 @@ public class RetailTransactionMonitorTopology {
 	              .withColumnFields(new Fields("DummyFields"))
 	              .withColumnFamily("Transactions");
 	      
+	      DelimitedRecordHiveMapper processedTransactionHiveMapper = new DelimitedRecordHiveMapper()
+	    		  .withColumnFields(new Fields("transactionId",
+	    			"locationId",
+	    			"item",
+	    			"accountNumber",
+	    			"amount",
+	    			"currency",
+	    			"isCardPresent",
+	    			"ipAddress",
+	    			"transactionTimeStamp"))
+	    		  .withPartitionFields(new Fields("accountType", "shipToState"));
+	    		 
+	      HiveOptions processedTransactionHiveOptions = new HiveOptions(constants.getHiveMetaStoreURI(),
+	    				 							constants.getHiveDbName(),
+	    				 							"retail_transaction_history",
+	    				 							processedTransactionHiveMapper);
+	      
 	      builder.setSpout("IncomingTransactionsKafkaSpout", incomingTransactionsKafkaSpout);
 	      builder.setBolt("InstantiateProvenance", new InstantiateProvenance(), 1).shuffleGrouping("IncomingTransactionsKafkaSpout");
 	      builder.setBolt("EnrichTransaction", new EnrichTransaction(), 1).shuffleGrouping("InstantiateProvenance");
 	      builder.setBolt("PublishTransaction", new PublishTransaction(), 1).shuffleGrouping("EnrichTransaction", "TransactionStream");
 	      builder.setBolt("PersistTransactionToHBase", new HBaseBolt("TransactionHistory", transactionHistoryMapper).withConfigKey("hbase.conf"), 1).shuffleGrouping("EnrichTransaction", "TransactionEmptyStream");
 	      builder.setBolt("PersistTransactionItemsToHBase", new HBaseBolt("TransactionItems", transactionItemsMapper).withConfigKey("hbase.conf"), 1).shuffleGrouping("EnrichTransaction", "TransactionEmptyStream");
+	      builder.setBolt("ProcessedTransactionPersistToHive", new HiveBolt(processedTransactionHiveOptions),1).shuffleGrouping("EnrichTransaction", "HiveTransactionStream");
 	      //builder.setBolt("TransactionMonitor", new TransactionMonitor().withWindow(new Duration(10), new Duration(5)),1).shuffleGrouping("EnrichTransaction", "TransactionStream").shuffleGrouping("EnrichInventoryUpdate", "InventoryStream");
 	      //builder.setBolt("AtlasLineageReporter", new AtlasLineageReporter(), 1).shuffleGrouping("TransactionMonitor", "ProvenanceRegistrationStream");
 	      

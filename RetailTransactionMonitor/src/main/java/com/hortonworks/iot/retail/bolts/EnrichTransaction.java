@@ -326,5 +326,6 @@ public class EnrichTransaction extends BaseRichBolt {
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		declarer.declareStream("TransactionStream", new Fields("EnrichedTransaction","ProvenanceEvent"));
 		declarer.declareStream("TransactionEmptyStream", new Fields("DummyField"));
+		declarer.declareStream("HiveTransactionStream", new Fields("TransactionHistory"));
 	}
 }

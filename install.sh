@@ -299,6 +299,26 @@ configureYarnMemory () {
 	fi	
 }
 
+createRetailTransactionHistoryTable () {
+	HIVESERVER_HOST=$(getHiveServerHost)
+	HQL="CREATE TABLE IF NOT EXISTS retail_transaction_history (transactionId String,
+	    			locationId String,
+	    			item String,
+	    			accountNumber String,
+	    			amount Double,
+	    			currency String,
+	    			isCardPresent String,
+	    			ipAddress String,
+	    			transactionTimeStamp String)
+	COMMENT 'Retail Purchase Transaction History'
+	PARTITIONED BY (accountType String, shipToState String)
+	CLUSTERED BY (accountNumber) INTO 30 BUCKETS
+	STORED AS ORC;"
+	
+	# CREATE Customer Transaction History Table
+	beeline -u jdbc:hive2://$HIVESERVER_HOST:10000/default -d org.apache.hive.jdbc.HiveDriver -e "$HQL"
+}
+
 getNameNodeHost () {
        	NAMENODE_HOST=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/HDFS/components/NAMENODE|grep "host_name"|grep -Po ': "([a-zA-Z0-9\-_!?.]+)'|grep -Po '([a-zA-Z0-9\-_!?.]+)')
        	
@@ -402,6 +422,10 @@ echo " 				  *****************Creating Docker Home Folder..."
 mkdir /home/docker/
 mkdir /home/docker/dockerbuild/
 mkdir /home/docker/dockerbuild/retaildashboardui
+
+#Create Retail Transaction History Hive Table for Storm topology
+echo "*********************************Creating TransactionHistory Hive Table..."
+createRetailTransactionHistoryTable
 
 echo "*********************************Staging Slider Configurations..."
 cd $ROOT_PATH/SliderConfig
