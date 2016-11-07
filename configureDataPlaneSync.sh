@@ -67,6 +67,31 @@ startService (){
        	fi
 }
 
+recreateRetailTransactionHistoryTable () {
+	HIVESERVER_HOST=$(getHiveServerHost)
+
+	HQL="DROP TABLE retail_transaction_history;"
+	# CREATE Customer Transaction History Table
+	beeline -u jdbc:hive2://$HIVESERVER_HOST:10000/default -d org.apache.hive.jdbc.HiveDriver -e "$HQL"
+	
+	HQL="CREATE TABLE IF NOT EXISTS retail_transaction_history (transactionId String,
+	    			locationId String,
+	    			item String,
+	    			accountNumber String,
+	    			amount Double,
+	    			currency String,
+	    			isCardPresent String,
+	    			ipAddress String,
+	    			transactionTimeStamp String)
+	COMMENT 'Retail Purchase Transaction History'
+	PARTITIONED BY (accountType String, shipToState String)
+	CLUSTERED BY (accountNumber) INTO 30 BUCKETS
+	STORED AS ORC;"
+	
+	# CREATE Customer Transaction History Table
+	beeline -u jdbc:hive2://$HIVESERVER_HOST:10000/default -d org.apache.hive.jdbc.HiveDriver -e "$HQL"
+}
+
 retargetNifiFlowReporter() {
 	sleep 1
 	echo "*********************************Getting Nifi Reporting Task Id..."
@@ -226,6 +251,10 @@ cd Utils/DataPlaneUtils
 mvn clean package
 java -jar target/DataPlaneUtils-0.0.1-SNAPSHOT-jar-with-dependencies.jar
 
+# Recreate TransactionHistory table to reset Atlas qualified name to this cluster
+echo "*********************************Recreating TransactionHistory Table..."
+recreateRetailTransactionHistoryTable
+
 echo "*********************************Redeploy Storm Topology..."
 storm kill RetailTransactionMonitor
 storm jar /home/storm/RetailTransactionMonitor-0.0.1-SNAPSHOT.jar com.hortonworks.iot.retail.topology.RetailTransactionMonitorTopology
@@ -233,4 +262,5 @@ storm jar /home/storm/RetailTransactionMonitor-0.0.1-SNAPSHOT.jar com.hortonwork
 # Start Nifi Flow Reporter to send flow meta data to Atlas
 echo "*********************************Retargeting Nifi Flow Reporting Task..."
 sleep 5
+retargetNifiFlowReporter
 retargetNifiFlowReporter
