@@ -263,4 +263,5 @@ storm jar /home/storm/RetailTransactionMonitor-0.0.1-SNAPSHOT.jar com.hortonwork
 echo "*********************************Retargeting Nifi Flow Reporting Task..."
 sleep 5
 retargetNifiFlowReporter
-retargetNifiFlowReporter
+
+exit 0

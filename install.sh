@@ -5,6 +5,24 @@
 #Get Atlas Host - /var/lib/ambari-server/resources/scripts/configs.sh get vvaks-1 CreditFraudDemo application-properties |grep "atlas.rest.address"|grep -Po '//([a-zA-z\-0-9.])+'|grep -Po '([a-zA-z\-0-9.])+'
 
 #export AMBARI_HOST=$(cat /etc/ambari-agent/conf/ambari-agent.ini| grep hostname= |grep -Po '([0-9.]+)')
+if [ ! -d "/usr/jdk64" ]; then
+	echo "*********************************Install and Enable Oracle JDK 8"
+	wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-linux-x64.tar.gz"
+	tar -vxzf jdk-8u101-linux-x64.tar.gz -C /usr
+	mv /usr/jdk1.8.0_101 /usr/jdk64
+	alternatives --install /usr/bin/java java /usr/jdk64/bin/java 3
+	alternatives --install /usr/bin/javac javac /usr/jdk64/bin/javac 3
+	alternatives --install /usr/bin/jar jar /usr/jdk64/bin/jar 3
+	export JAVA_HOME=/usr/jdk64
+	echo "export JAVA_HOME=/usr/jdk64" >> /etc/bashrc
+fi
+
+if [[ -d "/usr/hdp/current/atlas-server"  && ! -d "/usr/hdp/current/atlas-client" ]]; then 
+echo "*********************************Only Atlas Server installed, setting symbolic link"
+	ln -s /usr/hdp/current/atlas-server /usr/hdp/current/atlas-client
+	ln -s /usr/hdp/current/atlas-server/conf/application.properties /usr/hdp/current/atlas-client/conf/atlas-application.properties
+fi
+
 export AMBARI_HOST=$(hostname -f)
 echo "*********************************AMABRI HOST IS: $AMBARI_HOST"
 
@@ -259,7 +277,7 @@ startNifiFlow () {
        			echo "Current Processor ID: $ID"
        			echo "Current Processor TYPE: $TYPE"
 
-       			if ! [[ -z $(echo $TYPE|grep "PutKafka") ]]; then
+       			if ! [[ -z $(echo $TYPE|grep "PutKafka") || -z $(echo $TYPE|grep "PublishKafka_0_10") || -z $(echo $TYPE|grep "PublishKafka") ]]; then
        				echo "***************************This is a PutKafka Processor"
        				echo "***************************Updating Kafka Broker Porperty and Activating Processor..."
        				PAYLOAD=$(echo "{\"id\":\"$ID\",\"revision\":{\"version\":$REVISION},\"component\":{\"id\":\"$ID\",\"config\":{\"properties\":{\"Known Brokers\":\"$AMBARI_HOST:6667\"}},\"state\":\"RUNNING\"}}")
@@ -584,5 +602,7 @@ echo "*********************************Setting Ambari-Server to Start on Boot...
 chkconfig --add ambari-server
 chkconfig ambari-server on
 echo "*********************************Installation Complete... "
+
+exit 0
 # Reboot to refresh configuration
 #reboot now
