@@ -316,12 +316,12 @@ length=${#TARGETS[@]}
 installDemoControl () {
 		echo "*********************************Creating Demo Control service..."
        	# Create Demo Control service
-       	curl -u admin:admin -H "X-Requested-By:ambari" -i -X POST http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/BIOLOGICS_DEMO_CONTROL
+       	curl -u admin:admin -H "X-Requested-By:ambari" -i -X POST http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/RETAIL_DEMO_CONTROL
 
        	sleep 2
        	echo "*********************************Adding Demo Control component..."
        	# Add Demo Control component to service
-       	curl -u admin:admin -H "X-Requested-By:ambari" -i -X POST http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/BIOLOGICS_DEMO_CONTROL/components/BIOLOGICS_DEMO_CONTROL
+       	curl -u admin:admin -H "X-Requested-By:ambari" -i -X POST http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/RETAIL_DEMO_CONTROL/components/RETAIL_DEMO_CONTROL
 
        	sleep 2
        	echo "*********************************Creating Demo Control configuration..."
@@ -346,16 +346,16 @@ installDemoControl () {
        	sleep 2
        	echo "*********************************Adding Creating role to Host..."
        	# Add NIFI Master role to Sandbox host
-       	curl -u admin:admin -H "X-Requested-By:ambari" -i -X POST http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/hosts/$AMBARI_HOST/host_components/BIOLOGICS_DEMO_CONTROL
+       	curl -u admin:admin -H "X-Requested-By:ambari" -i -X POST http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/hosts/$AMBARI_HOST/host_components/RETAIL_DEMO_CONTROL
 
        	sleep 15
        	echo "*********************************Installing Demo Control Service"
        	# Install Demo Control Service
-       	TASKID=$(curl -u admin:admin -H "X-Requested-By:ambari" -i -X PUT -d '{"RequestInfo": {"context" :"Install Nifi"}, "Body": {"ServiceInfo": {"maintenance_state" : "OFF", "state": "INSTALLED"}}}' http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/BIOLOGICS_DEMO_CONTROL | grep "id" | grep -Po '([0-9]+)')
+       	TASKID=$(curl -u admin:admin -H "X-Requested-By:ambari" -i -X PUT -d '{"RequestInfo": {"context" :"Install Nifi"}, "Body": {"ServiceInfo": {"maintenance_state" : "OFF", "state": "INSTALLED"}}}' http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/RETAIL_DEMO_CONTROL | grep "id" | grep -Po '([0-9]+)')
        	
        	if [ -z $TASKID ]; then
        		until ! [ -z $TASKID ]; do
-       			TASKID=$(curl -u admin:admin -H "X-Requested-By:ambari" -i -X PUT -d '{"RequestInfo": {"context" :"Install Demo Control"}, "Body": {"ServiceInfo": {"maintenance_state" : "OFF", "state": "INSTALLED"}}}' http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/BIOLOGICS_DEMO_CONTROL grep "id" | grep -Po '([0-9]+)')
+       			TASKID=$(curl -u admin:admin -H "X-Requested-By:ambari" -i -X PUT -d '{"RequestInfo": {"context" :"Install Demo Control"}, "Body": {"ServiceInfo": {"maintenance_state" : "OFF", "state": "INSTALLED"}}}' http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/RETAIL_DEMO_CONTROL grep "id" | grep -Po '([0-9]+)')
        		 	echo "*********************************AMBARI TaskID " $TASKID
        		done
        	fi
