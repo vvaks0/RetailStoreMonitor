@@ -539,9 +539,17 @@ cp -vf appConfig.json /home/docker/dockerbuild/retaildashboardui
 cp -vf metainfo.json /home/docker/dockerbuild/retaildashboardui
 cp -vf resources.json /home/docker/dockerbuild/retaildashboardui
 
+echo "*********************************Copy redeployApplication.sh to /root"
+cd $ROOT_PATH
+cp -Rvf $ROOT_PATH/redeployApplication.sh /root
+
 echo "*********************************Load Demo Control Service into Ambari"
 cd $ROOT_PATH
 cp -Rvf $ROOT_PATH/RETAIL_DEMO_CONTROL /var/lib/ambari-server/resources/stacks/HDP/$VERSION/services/
+
+echo "*********************************Load Data Plane Client Service into Ambari"
+git clone https://github.com/vakshorton/Utils
+cp -Rvf $ROOT_PATH/Utils/DATA_PLANE_CLIENT /var/lib/ambari-server/resources/stacks/HDP/$VERSION/services/
 
 # Build from source
 echo "*********************************Building Retail Transaction Monitor Storm Topology"
