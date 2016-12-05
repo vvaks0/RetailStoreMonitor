@@ -696,6 +696,9 @@ else
        	echo "*********************************STORM Service Started..."
 fi
 
+stopService STORM
+startService STORM
+
 # Download Docker Images
 echo "*********************************Downloading Docker Images for UI..."
 service docker start
