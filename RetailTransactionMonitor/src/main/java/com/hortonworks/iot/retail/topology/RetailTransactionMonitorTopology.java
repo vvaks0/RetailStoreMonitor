@@ -155,8 +155,7 @@ public class RetailTransactionMonitorTopology {
 	              .withColumnFields(new Fields("DummyFields"))
 	              .withColumnFamily("Transactions");
 	      
-	      DelimitedRecordHiveMapper processedTransactionHiveMapper = new DelimitedRecordHiveMapper()
-	    		  .withColumnFields(new Fields("transactionId",
+	      String[] colNames = {"transactionId",
 	    			"locationId",
 	    			"item",
 	    			"accountNumber",
@@ -164,8 +163,13 @@ public class RetailTransactionMonitorTopology {
 	    			"currency",
 	    			"isCardPresent",
 	    			"ipAddress",
-	    			"transactionTimeStamp"))
-	    		  .withPartitionFields(new Fields("accountType", "shipToState"));
+	    			"transactionTimeStamp"};
+	      
+	      String[] partNames = {"accountType", "shipToState"};
+	      
+	      DelimitedRecordHiveMapper processedTransactionHiveMapper = new DelimitedRecordHiveMapper()
+	    		  .withColumnFields(new Fields(colNames))
+	    		  .withPartitionFields(new Fields(partNames));
 	    		 
 	      HiveOptions processedTransactionHiveOptions = new HiveOptions(constants.getHiveMetaStoreURI(),
 	    				 							constants.getHiveDbName(),
