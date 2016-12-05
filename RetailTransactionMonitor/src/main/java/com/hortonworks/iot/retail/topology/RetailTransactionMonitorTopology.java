@@ -174,7 +174,10 @@ public class RetailTransactionMonitorTopology {
 	      HiveOptions processedTransactionHiveOptions = new HiveOptions(constants.getHiveMetaStoreURI(),
 	    				 							constants.getHiveDbName(),
 	    				 							"retail_transaction_history",
-	    				 							processedTransactionHiveMapper);
+	    				 							processedTransactionHiveMapper)
+	    		  									.withTxnsPerBatch(10)
+	    		  									.withBatchSize(1000)
+	    		  									.withIdleTimeout(10);
 	      
 	      builder.setSpout("IncomingTransactionsKafkaSpout", incomingTransactionsKafkaSpout);
 	      builder.setBolt("InstantiateProvenance", new InstantiateProvenance(), 1).shuffleGrouping("IncomingTransactionsKafkaSpout");
