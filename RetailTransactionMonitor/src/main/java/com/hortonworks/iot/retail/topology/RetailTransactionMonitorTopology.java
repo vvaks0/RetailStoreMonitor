@@ -176,7 +176,7 @@ public class RetailTransactionMonitorTopology {
 	    				 							"retail_transaction_history",
 	    				 							processedTransactionHiveMapper)
 	    		  									.withTxnsPerBatch(10)
-	    		  									.withBatchSize(1000)
+	    		  									.withBatchSize(10)
 	    		  									.withIdleTimeout(10);
 	      
 	      builder.setSpout("IncomingTransactionsKafkaSpout", incomingTransactionsKafkaSpout);
