@@ -712,6 +712,9 @@ stopService HBASE
 startService HBASE
 echo "*********************************Checking Hive Configurations..."
 echo " 				  *****************Set Hive Scratch Folder..."
+mkdir /tmp/hive
+chmod 777 /tmp
+chmod 777 /tmp/hive
 hadoop fs -mkdir /tmp/hive/
 hadoop fs -chmod 777 /tmp/
 hadoop fs -chmod 777 /tmp/hive/

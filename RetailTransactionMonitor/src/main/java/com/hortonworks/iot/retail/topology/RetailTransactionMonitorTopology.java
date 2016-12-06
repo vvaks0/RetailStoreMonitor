@@ -177,7 +177,7 @@ public class RetailTransactionMonitorTopology {
 	    				 							processedTransactionHiveMapper)
 	    		  									.withTxnsPerBatch(10)
 	    		  									.withBatchSize(10)
-	    		  									.withIdleTimeout(10);
+	    		  									.withIdleTimeout(0);
 	      
 	      builder.setSpout("IncomingTransactionsKafkaSpout", incomingTransactionsKafkaSpout);
 	      builder.setBolt("InstantiateProvenance", new InstantiateProvenance(), 1).shuffleGrouping("IncomingTransactionsKafkaSpout");
