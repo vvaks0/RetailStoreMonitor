@@ -176,6 +176,9 @@ public class EnrichTransaction extends BaseRichBolt {
 					transaction.getTransactionId() + "','" +
 					currentProduct.getProductId() + "') \n";
 			}
+			System.out.println("********************** EnrichTransaction execute() transactionItemsUpsert: " +
+					transactionItemsUpsert
+					);
 			conn.createStatement().executeUpdate(transactionItemsUpsert);
 			conn.commit();
 		} catch (SQLException e) {
