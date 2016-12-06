@@ -131,7 +131,7 @@ public class EnrichTransaction extends BaseRichBolt {
 			persistTransactionToHbase(enrichedTransaction);
 			System.out.println("********************** EnrichTransaction execute() emitting Tuple");
 			collector.emit("TransactionStream",tuple, new Values((EnrichedTransaction)enrichedTransaction, stormProvenance));
-			collector.emit("HiveTransactionStream",tuple, new Values(enrichedTransaction.getTransactionId(), 
+			/*collector.emit("HiveTransactionStream",tuple, new Values(enrichedTransaction.getTransactionId(), 
 														  enrichedTransaction.getLocationId(),
 														  enrichedTransaction.getItems(),
 														  enrichedTransaction.getAccountNumber(),
@@ -141,7 +141,7 @@ public class EnrichTransaction extends BaseRichBolt {
 														  enrichedTransaction.getIpAddress(),
 														  enrichedTransaction.getTransactionTimeStamp(),
 														  enrichedTransaction.getAccountType(),
-														  enrichedTransaction.getShipToState())); 
+														  enrichedTransaction.getShipToState())); */ 
 			collector.ack(tuple);
 		}
 		else{
