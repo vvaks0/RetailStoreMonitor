@@ -141,7 +141,7 @@ public class EnrichTransaction extends BaseRichBolt {
 														  enrichedTransaction.getIpAddress(),
 														  enrichedTransaction.getTransactionTimeStamp(),
 														  enrichedTransaction.getAccountType(),
-														  enrichedTransaction.getShipToState())); */
+														  enrichedTransaction.getShipToState())); */ 
 			collector.ack(tuple);
 		}
 		else{
