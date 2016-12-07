@@ -82,6 +82,8 @@ hadoop fs -chmod 777 /spark-history
 echo "*********************************Recreating TransactionHistory Table..."
 recreateRetailTransactionHistoryTable
 
+#spark-shell --master yarn-client --jars /usr/hdp/current/phoenix-client/lib/phoenix-spark-4.7.0.2.5.3.0-37.jar,/usr/hdp/current/phoenix-client/phoenix-client.jar
+
 # Redeploy Storm Topology to send topology meta data to Atlas
 echo "*********************************Redeploy Storm Topology..."
 storm kill RetailTransactionMonitor
