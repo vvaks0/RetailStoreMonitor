@@ -9,6 +9,7 @@ export ATLAS_HOST=$3
 export ATLAS_PORT=$4
 export HIVESERVER_HOST=$5
 export HIVESERVER_PORT=$6
+export CLUSTER_NAME=$7
 
 env
 
@@ -48,7 +49,7 @@ recreateRetailTransactionHistoryTable () {
 	# CREATE Customer Transaction History Table
 	#beeline -u jdbc:hive2://$HIVESERVER_HOST:$HIVESERVER_PORT/default -d org.apache.hive.jdbc.HiveDriver -e "$HQL" -n hive
 	
-	HQL="CREATE TABLE IF NOT EXISTS retail_transaction_history (transactionId String,
+	HQL="CREATE TABLE IF NOT EXISTS retail_transaction_history_$CLUSTER_NAME (transactionId String,
 	    			locationId String,
 	    			item String,
 	    			accountNumber String,
@@ -57,7 +58,6 @@ recreateRetailTransactionHistoryTable () {
 	    			isCardPresent String,
 	    			ipAddress String,
 	    			transactionTimeStamp String)
-	COMMENT 'Retail Purchase Transaction History'
 	PARTITIONED BY (accountType String, shipToState String)
 	CLUSTERED BY (accountNumber) INTO 30 BUCKETS
 	STORED AS ORC;"
@@ -87,7 +87,7 @@ rm -Rvf classes*
 mvn clean package
 mv target/SparkPhoenixETL-0.0.1-SNAPSHOT-jar-with-dependencies.jar /home/spark
 
-spark-submit --class com.hortonworks.util.SparkPhoenixETL --master yarn-client --executor-cores 2 --driver-memory 2G --executor-memory 2G --num-executors 1 /home/spark/SparkPhoenixETL-0.0.1-SNAPSHOT-jar-with-dependencies.jar $ZK_HOST:2181:/hbase-unsecure
+spark-submit --class com.hortonworks.util.SparkPhoenixETL --master yarn-client --executor-cores 2 --driver-memory 2G --executor-memory 2G --num-executors 1 /home/spark/SparkPhoenixETL-0.0.1-SNAPSHOT-jar-with-dependencies.jar $ZK_HOST:2181:/hbase-unsecure $CLUSTER_NAME
 
 #nohup spark-submit --class com.hortonworks.util.SparkPhoenixETL --master yarn-cluster --executor-cores 2 --driver-memory 2G --executor-memory 2G --num-executors 1 /home/spark/SparkPhoenixETL-0.0.1-SNAPSHOT-jar-with-dependencies.jar $ZK_HOST:2181:/hbase-unsecure > /dev/null 2>&1&
 
