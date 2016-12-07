@@ -83,6 +83,7 @@ echo "*********************************Recreating TransactionHistory Table..."
 recreateRetailTransactionHistoryTable
 
 cd /root/Utils/SparkPhoenixETL
+rm -Rvf classes*
 mvn clean package
 mv target/SparkPhoenixETL-0.0.1-SNAPSHOT-jar-with-dependencies.jar /home/spark
 
