@@ -357,7 +357,7 @@ fi
 
 # Deploy Storm Topology
 echo "*********************************Deploying Storm Topology..."
-storm jar /home/storm/RetailTransactionMonitor-0.0.1-SNAPSHOT.jar com.hortonworks.iot.retail.topology.RetailTransactionMonitorTopology
+storm jar /home/storm/RetailTransactionMonitor-0.0.1-SNAPSHOT.jar com.hortonworks.iot.retail.topology.RetailTransactionMonitorTopology $CLUSTER_NAME
 
 # Start Nifi Flow Reporter to send flow meta data to Atlas
 sleep 5
