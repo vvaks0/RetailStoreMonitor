@@ -82,7 +82,7 @@ hadoop fs -chmod 777 /spark-history
 echo "*********************************Recreating TransactionHistory Table..."
 recreateRetailTransactionHistoryTable
 
-cd /root/RetailStoreMonitor/Utils/SparkPhoenixETL
+cd /root/Utils/SparkPhoenixETL
 mvn clean package
 mv target/SparkPhoenixETL-0.0.1-SNAPSHOT-jar-with-dependencies.jar /home/spark
 
