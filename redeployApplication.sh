@@ -99,7 +99,7 @@ spark-submit --class com.hortonworks.util.SparkPhoenixETL --master yarn-client -
 
 # Redeploy Storm Topology to send topology meta data to Atlas
 echo "*********************************Redeploy Storm Topology..."
-storm kill RetailTransactionMonitor
+storm kill RetailTransactionMonitor-$CLUSTER_NAME
 
 curl -u admin:admin -X DELETE 'http://'"$ATLAS_HOST:$ATLAS_PORT"'/api/atlas/entities?type=storm_topology&property=qualifiedName&value=RetailTransactionMonitor'
 
