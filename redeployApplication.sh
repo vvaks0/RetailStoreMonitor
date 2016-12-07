@@ -44,9 +44,9 @@ PAYLOAD=$(echo "{\"id\":\"$REPORTING_TASK_ID\",\"revision\":{\"version\":1},\"co
 }
 
 recreateRetailTransactionHistoryTable () {
-	HQL="DROP TABLE retail_transaction_history;"
+	#HQL="DROP TABLE retail_transaction_history;"
 	# CREATE Customer Transaction History Table
-	beeline -u jdbc:hive2://$HIVESERVER_HOST:$HIVESERVER_PORT/default -d org.apache.hive.jdbc.HiveDriver -e "$HQL" -n hive
+	#beeline -u jdbc:hive2://$HIVESERVER_HOST:$HIVESERVER_PORT/default -d org.apache.hive.jdbc.HiveDriver -e "$HQL" -n hive
 	
 	HQL="CREATE TABLE IF NOT EXISTS retail_transaction_history (transactionId String,
 	    			locationId String,
@@ -69,6 +69,14 @@ recreateRetailTransactionHistoryTable () {
 #cd $ROOT_PATH/DataPlaneUtils
 #mvn clean package
 #java -jar target/DataPlaneUtils-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+
+echo "*********************************Configure HDFS application space..."
+export HADOOP_USER_NAME=hdfs
+hadoop fs -mkdir /user/root
+hadoop fs -chown root:hdfs /user/root
+hadoop fs -mkdir /spark-history
+hadoop fs -chown spark:hdfs /spark-history
+hadoop fs -chmod 777 /spark-history
 
 # Recreate TransactionHistory table to reset Atlas qualified name to this cluster
 echo "*********************************Recreating TransactionHistory Table..."
