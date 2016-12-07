@@ -64,6 +64,10 @@ recreateRetailTransactionHistoryTable () {
 	
 	# CREATE Customer Transaction History Table
 	beeline -u jdbc:hive2://$HIVESERVER_HOST:$HIVESERVER_PORT/default -d org.apache.hive.jdbc.HiveDriver -e "$HQL" -n hive
+	
+	HQL="CREATE TABLE IF NOT EXISTS retail_products_$CLUSTER_NAME (productId String, productCategory String, manufacturer String, productName String, price Double) PARTITIONED BY (productSubCategory String) CLUSTERED BY (manufacturer) INTO 30 BUCKETS STORED AS ORC"
+	
+	beeline -u jdbc:hive2://$HIVESERVER_HOST:$HIVESERVER_PORT/default -d org.apache.hive.jdbc.HiveDriver -e "$HQL" -n hive
 }
 
 #cd $ROOT_PATH/DataPlaneUtils
