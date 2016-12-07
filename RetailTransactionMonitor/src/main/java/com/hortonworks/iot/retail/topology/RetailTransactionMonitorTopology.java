@@ -75,10 +75,19 @@ import storm.kafka.ZkHosts;
 */
 
 public class RetailTransactionMonitorTopology {
-	 public static void main(String[] args) {
+	static String topologyName = "RetailTransactionMonitor";
+	
+	public static void main(String[] args) {
 	     TopologyBuilder builder = new TopologyBuilder();
 	     Constants constants = new Constants();   
-	  	 /*
+	     String hostClusterName = null; 
+	     String retailTransactionsTable = "retail_transaction_history";
+	     if(args[0] != null){
+	     	hostClusterName = args[0];
+	    	topologyName = "RetailTransactionMonitor-"+hostClusterName;
+	    	retailTransactionsTable = "retail_transaction_history_"+hostClusterName;
+	     }	
+	     /*
 	     RecordFormat format = new DelimitedRecordFormat().withFieldDelimiter(",");
 	  	 SyncPolicy syncPolicy = new CountSyncPolicy(1000);
 	  	 FileRotationPolicy rotationPolicy = new FileSizeRotationPolicy(5.0f, Units.MB);
@@ -173,7 +182,7 @@ public class RetailTransactionMonitorTopology {
 	    		 
 	      HiveOptions processedTransactionHiveOptions = new HiveOptions(constants.getHiveMetaStoreURI(),
 	    				 							constants.getHiveDbName(),
-	    				 							"retail_transaction_history",
+	    				 							retailTransactionsTable,
 	    				 							processedTransactionHiveMapper)
 	    		  									.withTxnsPerBatch(10)
 	    		  									.withBatchSize(10)
@@ -210,12 +219,12 @@ public class RetailTransactionMonitorTopology {
 	 
 	 public static void submitToLocal(TopologyBuilder builder, Config conf){
 		 LocalCluster cluster = new LocalCluster();
-		 cluster.submitTopology("RetailTransactionMonitor", conf, builder.createTopology()); 
+		 cluster.submitTopology(topologyName, conf, builder.createTopology()); 
 	 }
 	 
 	 public static void submitToCluster(TopologyBuilder builder, Config conf){
 		 try {
-				StormSubmitter.submitTopology("RetailTransactionMonitor", conf, builder.createTopology());
+				StormSubmitter.submitTopology(topologyName, conf, builder.createTopology());
 		      } catch (AlreadyAliveException e) {
 				e.printStackTrace();
 		      } catch (InvalidTopologyException e) {
