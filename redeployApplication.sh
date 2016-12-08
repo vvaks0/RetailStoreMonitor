@@ -101,7 +101,7 @@ spark-submit --class com.hortonworks.util.SparkPhoenixETL --master yarn-client -
 echo "*********************************Redeploy Storm Topology..."
 storm kill RetailTransactionMonitor-$CLUSTER_NAME
 
-curl -u admin:admin -X DELETE 'http://'"$ATLAS_HOST:$ATLAS_PORT"'/api/atlas/entities?type=storm_topology&property=qualifiedName&value=RetailTransactionMonitor'
+curl -u admin:admin -X DELETE 'http://'"$ATLAS_HOST:$ATLAS_PORT"'/api/atlas/entities?type=storm_topology&property=qualifiedName&value=RetailTransactionMonitor'"-$CLUSTER_NAME"
 
 storm jar /home/storm/RetailTransactionMonitor-0.0.1-SNAPSHOT.jar com.hortonworks.iot.retail.topology.RetailTransactionMonitorTopology $CLUSTER_NAME
 
