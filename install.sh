@@ -423,7 +423,7 @@ createRetailTransactionHistoryTable () {
 	PARTITIONED BY (accountType String, shipToState String)
 	CLUSTERED BY (accountNumber) INTO 30 BUCKETS
 	STORED AS ORC
-	TBLPROPERTIES ("transactional"="true");"
+	TBLPROPERTIES (\"transactional\"=\"true\");"
 	
 	# CREATE Customer Transaction History Table
 	beeline -u jdbc:hive2://$HIVESERVER_HOST:10000/default -d org.apache.hive.jdbc.HiveDriver -e "$HQL" -n hive
