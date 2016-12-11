@@ -194,10 +194,11 @@ installNifiService () {
        	echo "*********************************Installing NIFI Service"
        	# Install NIFI Service
        	TASKID=$(curl -u admin:admin -H "X-Requested-By:ambari" -i -X PUT -d '{"RequestInfo": {"context" :"Install Nifi"}, "Body": {"ServiceInfo": {"maintenance_state" : "OFF", "state": "INSTALLED"}}}' http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/NIFI | grep "id" | grep -Po '([0-9]+)')
-       	
+		
+		sleep 2       	
        	if [ -z $TASKID ]; then
        		until ! [ -z $TASKID ]; do
-       			TASKID=$(curl -u admin:admin -H "X-Requested-By:ambari" -i -X PUT -d '{"RequestInfo": {"context" :"Install Nifi"}, "Body": {"ServiceInfo": {"maintenance_state" : "OFF", "state": "INSTALLED"}}}')
+       			TASKID=$(curl -u admin:admin -H "X-Requested-By:ambari" -i -X PUT -d '{"RequestInfo": {"context" :"Install Nifi"}, "Body": {"ServiceInfo": {"maintenance_state" : "OFF", "state": "INSTALLED"}}}' http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/NIFI | grep "id" | grep -Po '([0-9]+)')
        		 	echo "*********************************AMBARI TaskID " $TASKID
        		done
        	fi
@@ -384,7 +385,7 @@ enablePhoenix () {
 }
 
 configureYarnMemory () {
-	YARN_MEM_MAX=$(/var/lib/ambari-server/resources/scripts/configs.sh get vvaks Demo yarn-site | grep "yarn.scheduler.maximum-allocation-mb"|grep -Po ': "([0-9]+)"'|grep -Po '([0-9]+)')
+	YARN_MEM_MAX=$(/var/lib/ambari-server/resources/scripts/configs.sh get $AMBARI_HOST $CLUSTER_NAME yarn-site | grep '"yarn.scheduler.maximum-allocation-mb"'|grep -Po ': "([0-9]+)'|grep -Po '([0-9]+)')
 	echo "*********************************yarn.scheduler.maximum-allocation-mb is set to $YARN_MEM_MAX MB"
 	if [[ $YARN_MEM_MAX -lt 6000 ]]; then
 		echo "*********************************Changing YARN Container Memory Size..."
@@ -582,6 +583,8 @@ if [[ "$NIFI_SERVICE_PRESENT" == 0 ]]; then
        	
        	mkdir /var/run/nifi
 		chown nifi:nifi /var/run/nifi
+		
+		echo "*********************************Install Nifi Atlas Reporter..."
 		NIFI_HOME=$(ls /opt/|grep nifi)
 		if [ -z "$NIFI_HOME" ]; then
         	NIFI_HOME=$(ls /opt/|grep HDF)
@@ -633,6 +636,7 @@ echo "export NIFI_HOST=$NIFI_HOST" >> ~/.bash_profile
 . ~/.bash_profile
 installDemoControl
 
+sleep 2
 #Start Kafka
 KAFKA_STATUS=$(getServiceStatus KAFKA)
 echo "*********************************Checking KAFKA status..."
