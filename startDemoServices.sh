@@ -90,7 +90,7 @@ startService (){
             sleep 2
         done
         echo "*********************************$SERVICE Service Started..."
-       	elif [ "$SERVICE_TATUS" == STARTED ]; then
+       	elif [ "$SERVICE_STATUS" == STARTED ]; then
        	echo "*********************************$SERVICE Service Started..."
        	fi
 }
@@ -140,6 +140,12 @@ getAtlasHost () {
        	echo $ATLAS_HOST
 }
 
+getNifiHost () {
+       	NIFI_HOST=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/NIFI/comonents/NIFI_MASTER|grep "host_name"|grep -Po ': "([a-zA-Z0-9\-_!?.]+)'|grep -Po '([a-zA-Z0-9\-_!?.]+)')
+       	
+       	echo $NIFI_HOST
+}
+
 ambari-server start
 waitForAmbari
 
@@ -169,6 +175,8 @@ ATLAS_HOST=$(getAtlasHost)
 export ATLAS_HOST=$ATLAS_HOST
 COMETD_HOST=$AMBARI_HOST
 export COMETD_HOST=$COMETD_HOST
+NIFI_HOST=$(getNifiHost)
+export NIFI_HOST=$NIFI_HOST
 env
 
 mkdir /var/run/nifi
