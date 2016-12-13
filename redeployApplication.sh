@@ -95,7 +95,7 @@ spark-submit --class com.hortonworks.util.SparkPhoenixETL --master yarn-client -
 
 #nohup spark-submit --class com.hortonworks.util.SparkPhoenixETL --master yarn-cluster --executor-cores 2 --driver-memory 2G --executor-memory 2G --num-executors 1 /home/spark/SparkPhoenixETL-0.0.1-SNAPSHOT-jar-with-dependencies.jar $ZK_HOST:2181:/hbase-unsecure > /dev/null 2>&1&
 
-#spark-shell --master yarn-client --jars /usr/hdp/current/phoenix-client/lib/phoenix-spark-4.7.0.2.5.3.0-37.jar,/usr/hdp/current/phoenix-client/phoenix-client.jar
+#spark-shell --master yarn-client --jars /usr/hdp/current/phoenix-client/phoenix-client.jar
 
 # Redeploy Storm Topology to send topology meta data to Atlas
 echo "*********************************Redeploy Storm Topology..."
